@@ -9,15 +9,29 @@ public enum SyntaxKind
     MinusToken,
     SlashToken,
     StarToken,
-    BitwiseOrToken,
-    BitwiseAndToken,
-    BitwiseXorToken,
-    BitwiseShiftToken,
     PercentToken,
+    EqualsToken,
+    OpenParentheseToken,
+    CloseParentheseToken,
+    OpenBraceToken,
+    CloseBraceToken,
+    OpenBracketToken,
+    CloseBracketToken,
+    SemicolonToken,
 
-    //expressions
-    BinaryExpression,
-
+    //logical operators
+    IsEqualToken,
+    IsLessToken,
+    IsMoreToken,
+    LogicalAndToken,
+    LogicalOrToken,
+    //keywords
+    ReturnStatementToken,
+    UseStatementToken,
+    IfStatementToken,
+    ElseStatementToken,
+    ForLoopToken,
+    WhileLoopToken,
     // boundaries
     EndOfLineToken,
     StartOfFileToken,
@@ -25,7 +39,9 @@ public enum SyntaxKind
 
     //others
     NumberToken,
-    OpenParentheseToken,
-    CloseParentheseToken,
     WhitespaceToken,
+    CommentToken,
+    TextToken,
+    SingleQuoteToken,
+    DoubleQuotesToken,
 }

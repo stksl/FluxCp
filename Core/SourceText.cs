@@ -17,11 +17,28 @@ public unsafe sealed class SourceText
         _text = start;
         _length = length;
     }
+    public override string ToString()
+    {
+        return new string(_text, 0, Length);
+    }
+    public string ToString(int offset, int length) 
+    {
+        return new string(_text, offset, length);
+    }
     public static SourceText FromString(string source) 
     {
         fixed(char* ptr = source) 
         {
             return new SourceText(ptr, source.Length);
+        }
+    }
+    public static SourceText FromString(string source, int offset, int length) 
+    {
+        fixed(char* roptr = source) 
+        {
+            char* ptr = roptr;
+            ptr += offset;
+            return new SourceText(ptr, length);
         }
     }
 }

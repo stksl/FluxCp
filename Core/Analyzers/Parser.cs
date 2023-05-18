@@ -1,16 +1,22 @@
+using System.Collections.Immutable;
 namespace Fluxcp;
-
 public sealed class Parser 
 {
-    private readonly List<SyntaxToken> SyntaxTokens;
-    public Parser(List<SyntaxToken> SyntaxTokens_) 
+    #region DI
+    private readonly ImmutableArray<SyntaxToken> syntaxTokens;
+    private readonly ILogger logger;
+    #endregion
+    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, ILogger logger_) 
     {
-        SyntaxTokens = SyntaxTokens_;
-
-        
+        syntaxTokens = syntaxTokens_;
+        logger = logger_;
     }
-
-    public int EvaluateExpression() 
+    public SyntaxTree Parse() 
+    {
+        
+        return null!;
+    }
+    /* public int EvaluateExpression() 
     {
         Stack<SyntaxKind> ops = new Stack<SyntaxKind>();
         Stack<int> vals = new Stack<int>();
@@ -78,5 +84,5 @@ public sealed class Parser
 
         }
         return 0;
-    } 
+    } */ 
 }
