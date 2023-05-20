@@ -13,5 +13,9 @@ public sealed class ElseStatement : LogicalStatement
     public ExpressionNode? Expression;
     // will be built a doubly-linked list of else if statements
     public IfStatement? NextIfStatement;
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return Body;
+    }
 
 }

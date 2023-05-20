@@ -12,6 +12,14 @@ public sealed class FunctionDeclaration : SyntaxNode
         Name = name;
         Body = body;
     }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        for(int i = 0; i < Args?.Length; i++) 
+        {
+            yield return Args[i];
+        }
+        yield return Body;
+    }
 }
 public class FunctionArgument : SyntaxNode
 {
@@ -21,5 +29,9 @@ public class FunctionArgument : SyntaxNode
     {
         Name = name;
         DataType = (DataType)typeId;
+    }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return null!;
     }
 }

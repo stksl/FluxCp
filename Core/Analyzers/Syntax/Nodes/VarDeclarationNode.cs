@@ -13,4 +13,8 @@ public sealed class VarDeclarationNode : SyntaxNode
         Name = name;
         DataType = (DataType)typeId;
     }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return null!;
+    }
 }

@@ -6,6 +6,7 @@ public class SyntaxToken : ICloneable
     public readonly SourceText? Text;
     public int Offset;
     public int Length;
+    public string PlainValue => Text!.ToString(Offset, Length);
     public SyntaxToken(SourceText? text)
     {
         Text = text;
@@ -16,8 +17,9 @@ public class SyntaxToken : ICloneable
     }
     public override string ToString()
     {
-        return $"\\{Kind}\\ At position: {Offset} with length {Length}: \n";
+        return $"\\{Kind}\\ At position: {Offset} with length {Length}: \n" + PlainValue;
     }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Kind, Offset, Length, Text);

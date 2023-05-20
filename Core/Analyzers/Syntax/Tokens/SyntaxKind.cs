@@ -26,6 +26,7 @@ public enum SyntaxKind
     LogicalAndToken,
     LogicalOrToken,
     //keywords
+    StructDefineToken,
     ReturnStatementToken,
     UseStatementToken,
     IfStatementToken,

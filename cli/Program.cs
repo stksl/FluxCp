@@ -5,15 +5,17 @@ namespace Fluxcp.Cli
 {
     public class Program
     {
+        public static async Task<string> GetStringAsync() 
+        {
+            using(StreamReader sr = new StreamReader("./testfile.fcp")) 
+            {
+                return await sr.ReadToEndAsync();
+            }
+        }
         public static unsafe void Main()
         {
             Logger logger = new Logger();
-            string text = "use FCP.Main;\n" + 
-            "void Main()\n" + 
-            "{\n" +
-            "   i32 use1 = 1050;\n" +
-            "   for(u8 i = 0; i < 10; i++) {}" +
-            "}";
+            string text = GetStringAsync().Result;
             SourceText tr = SourceText.FromString(text);
 
             List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
@@ -23,16 +25,9 @@ namespace Fluxcp.Cli
             {
                 var curr = lexer.Lex();
                 syntaxTokens.Add(curr);
-                for(int i = curr.Offset; i < curr.Offset + curr.Length; i++) 
-                {
-                    Console.Write(curr.Text?[i]);
-                }
-                System.Console.WriteLine($" {curr.Kind}");
             }
-            syntaxTokens.Add(lexer.Lex()); // EOF token
-
             Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger);
-            parser.Parse();
+            var tree = parser.Parse();
         }
     }
     internal class Logger : ILogger

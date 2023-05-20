@@ -11,7 +11,10 @@ public sealed class IfStatement : LogicalStatement
     //pointer to the first body token
     public SyntaxNode Body;
     public ElseStatement? ElseStatement;
-    
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        throw new NotImplementedException();
+    }
 }
 public abstract class LogicalStatement : SyntaxNode
 {

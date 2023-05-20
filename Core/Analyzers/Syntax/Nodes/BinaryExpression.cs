@@ -10,6 +10,10 @@ public sealed class BinaryExpression : ExpressionNode
     public BinaryOperand Left;
     public BinaryOperand Right;
     public SyntaxKind OperatorKind;
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        throw new NotImplementedException();
+    }
 }
 public class BinaryOperand 
 {

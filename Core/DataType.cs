@@ -1,3 +1,5 @@
+using System.Text;
+using System.Security.Cryptography;
 namespace Fluxcp;
 public sealed class DataType : IDataType
 {
@@ -10,5 +12,11 @@ public sealed class DataType : IDataType
     public static explicit operator DataType(ulong typeId) 
     {
         return new DataType(typeId);
+    }
+    // just last 64bits SHA256 hashed bytes
+    public static ulong FromName(string name) 
+    {
+        byte[] hashed = SHA256.HashData(Encoding.UTF8.GetBytes(name));
+        return BitConverter.ToUInt64(hashed, hashed.Length - 8);
     }
 }

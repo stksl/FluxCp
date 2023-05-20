@@ -23,9 +23,22 @@ namespace Fluxcp;
 // 
 public class SyntaxTree 
 {
-    public readonly SyntaxNode Root;
-    public SyntaxTree(SyntaxNode root)
+    public SyntaxNode Root {get; private set;}
+    public SyntaxTree()
     {
-        Root = root;
+        Root = new ProgramBound();
+    }
+    public override string ToString()
+    {
+        return Root.ToString()!;
+    }
+    private class ProgramBound : SyntaxNode
+    {
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            // all the body are children
+            if (Next != null)
+                yield return Next!;
+        }
     }
 }

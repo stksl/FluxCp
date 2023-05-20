@@ -22,7 +22,8 @@ public sealed class Lexer
         ("else", SyntaxKind.ElseStatementToken),
         ("for", SyntaxKind.ForLoopToken),
         ("while", SyntaxKind.WhileLoopToken),
-        ("return", SyntaxKind.ReturnStatementToken)
+        ("return", SyntaxKind.ReturnStatementToken),
+        ("struct", SyntaxKind.StructDefineToken)
     };
     public unsafe Lexer(SourceText tr, ILogger? logger_)
     {
@@ -56,7 +57,7 @@ public sealed class Lexer
     }
     private SyntaxToken LexNode()
     {
-        if (EndOfFile()) 
+        if (position >= text.Length) 
         {
             if (current.Kind != SyntaxKind.EndOfFileToken) ChangeCurr(SyntaxKind.EndOfFileToken, 0);
             else logger?.ShowDebug("Lexing a finished text");
@@ -186,6 +187,6 @@ public sealed class Lexer
     }
     public bool EndOfFile()
     {
-        return position >= text.Length;
+        return current.Kind == SyntaxKind.EndOfFileToken;
     }
 }
