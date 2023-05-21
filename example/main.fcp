@@ -1,0 +1,39 @@
+## basic language syntax ##
+
+use FCP.Main;
+use FCP.Native;
+## or you can use imported project
+    use "path to options.json";
+##
+
+namespace Example {
+    struct MyStruct 
+    {
+        i32 SomeField;
+        str SomeText;
+        void Print() 
+        {
+            Std.Out.Print(str.Parse(SomeField) + " " + SomeText \n");
+        }
+    }
+    void Main() 
+    {
+        i32 myInteger = (2 + (20 / 10) * 90) * 2; ## the value is on the thread stack ##
+
+        MyStruct* ptr = MemAlloc(SizeOf(MyStruct));
+        *ptr.SomeField = 0x2040
+        6080;
+        *ptr.SomeText = "Some 
+        Text";
+        *ptr.Print();
+
+        MemClear(ptr);
+
+        Std.Out.Print(NotExported());
+    }
+}
+## this function won't be exported with the "Example" namespace i.e. only accessed in this file ##
+str NotExported() 
+{
+    return "Cant be exported (out of the \"namespace\" scope) \n"; ## you can use standart escape character "\" ##
+}

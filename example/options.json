@@ -1,0 +1,6 @@
+{
+    "Version": "beta1.0",
+    "EntryPoint": "./main.fcp",
+    "LogInformation": "true",
+    "Output": "exec"
+}
