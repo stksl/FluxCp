@@ -7,11 +7,11 @@ public sealed class VarDeclarationNode : SyntaxNode
     public readonly DataType DataType;
     public object? Value;
 
-    public VarDeclarationNode(string name, uint level, ulong typeId)
+    public VarDeclarationNode(string name, uint level, DataType typeId)
     {
         Level = level;
         Name = name;
-        DataType = (DataType)typeId;
+        DataType = typeId;
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {

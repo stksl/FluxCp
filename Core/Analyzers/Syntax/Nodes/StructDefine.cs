@@ -16,7 +16,7 @@ public sealed class StructDefine : SyntaxNode
         Functions = new Dictionary<string, FunctionDeclaration>(functions.Length);
         for(int i = 0; i < functions.Length; i++) 
         {
-            Functions[functions[i].Name] = functions[i];
+            Functions[functions[i].Header.Name] = functions[i];
         }
     }
     public override IEnumerable<SyntaxNode> GetChildren()

@@ -26,6 +26,7 @@ namespace Fluxcp.Cli
                 var curr = lexer.Lex();
                 syntaxTokens.Add(curr);
             }
+            System.Console.WriteLine(syntaxTokens.Where(i => i.Kind == SyntaxKind.CommentToken).First().Length);
             Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger);
             var tree = parser.Parse();
         }

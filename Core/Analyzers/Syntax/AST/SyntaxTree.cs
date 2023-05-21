@@ -28,10 +28,6 @@ public class SyntaxTree
     {
         Root = new ProgramBound();
     }
-    public override string ToString()
-    {
-        return Root.ToString()!;
-    }
     private class ProgramBound : SyntaxNode
     {
         public override IEnumerable<SyntaxNode> GetChildren()

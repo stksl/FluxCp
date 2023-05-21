@@ -1,3 +1,4 @@
+namespace Fluxcp;
 public interface ILogger 
 {
     // debug info only

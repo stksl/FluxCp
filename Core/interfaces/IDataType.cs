@@ -1,5 +1,5 @@
 namespace Fluxcp;
 interface IDataType 
 {
-    ulong TypeID {get;}
+    long TypeID {get;}
 }

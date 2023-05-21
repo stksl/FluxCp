@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Fluxcp.Errors;
 namespace Fluxcp;
 public sealed class Parser 
 {
@@ -53,8 +54,7 @@ public sealed class Parser
             }
             else 
             {
-                logger.ShowError("Unable to add a reference");
-                Environment.Exit(-1);
+                Error.Execute(logger, ErrorDefaults.UnknownReference);
             }
             offset++;
         }
@@ -93,15 +93,19 @@ _checkNext:
         if (SaveEquals(1, node => node.Kind != SyntaxKind.TextToken) || 
             SaveEquals(2, node => node.Kind != SyntaxKind.OpenBraceToken)) 
         {
-            logger.ShowError("Uncorrect structure defining!");
-            Environment.Exit(-1);
+            Error.Execute(logger, ErrorDefaults.UnknownDeclaration);
         }
         offset++; // skiping to structure's name
 
         string name = syntaxTokens[offset].PlainValue;
+        if (DataType.FromName(name).IsTypeDefined())
+            Error.Execute(logger, ErrorDefaults.AlreadyDefined);
+            
+        LocalStorage.Items[DataType.FromName(name).TypeID] = true;
 
         List<StructField> fields = new List<StructField>();
         List<FunctionDeclaration> functions = new List<FunctionDeclaration>();
+
 
         offset += 2; // skiping after '{'
         while (SaveEquals(0, node => node.Kind != SyntaxKind.CloseBraceToken)) 
@@ -110,51 +114,89 @@ _checkNext:
             if (SaveEquals(0, node => node.Kind != SyntaxKind.TextToken) || 
                 SaveEquals(1, node => node.Kind != SyntaxKind.TextToken)) 
             {
-                logger.ShowError("Uncorrect structure body!");
-                Environment.Exit(-1);
+                Error.Execute(logger, ErrorDefaults.UnknownDeclaration);
             }
 
             // only function/field declaration
             string typeName = syntaxTokens[offset].PlainValue;
-            ulong typeId = DataType.FromName(typeName);
-            if (!LocalStorage.Items.ContainsKey(typeId)) 
+            if (!DataType.FromName(typeName).IsTypeDefined()) 
             {
-                logger.ShowError("Unknown type!");
-                Environment.Exit(-1);
+                Error.Execute(logger, ErrorDefaults.UnknownType);
             }
 
             if (SaveEquals(2, SyntaxKind.SemicolonToken)) 
             {
-                // that's field
+                // that's a field
 
                 string fieldName = syntaxTokens[++offset].PlainValue;
 
-                fields.Add(new StructField(fieldName, new DataType(typeId)));
+                fields.Add(new StructField(fieldName, DataType.FromName(typeName)));
                 //skiping next semicolon and going after semicolon
                 offset += 2;
             }
-            else if (SaveEquals(1, SyntaxKind.OpenParentheseToken)) 
+            else if (SaveEquals(2, SyntaxKind.OpenParentheseToken)) 
             {
-                // prolly that's function
-                offset--; // decrementing our offset to hit function name start token
-                functions.Add(ParseFunctionDeclaration());
+                // that's a function
+                functions.Add(ParseFunction());
             }
             else 
             {
-                logger.ShowError("Expected ';'");
-                Environment.Exit(-1);
+                Error.Execute(logger, ErrorDefaults.SemicolonExpected);
             }
         }
-        // adding new type to RAM (9 bytes in total for every type)
-        LocalStorage.Items[DataType.FromName(name)] = true;
         return new StructDefine(name, fields.ToArray(), functions.ToArray());
     }
-    private FunctionDeclaration ParseFunctionDeclaration() 
+    private FunctionDeclaration ParseFunction() 
     {
-        string functionName = syntaxTokens[offset].PlainValue;
+        FunctionHeader header = ParseFunctionHeader();
+        ParseFunctionBody();
+        return new FunctionDeclaration(header, null!);
+    }
+    private FunctionHeader ParseFunctionHeader() 
+    {
+        if (!SaveEquals(0, SyntaxKind.TextToken) || 
+            !SaveEquals(1, SyntaxKind.TextToken) || 
+            !SaveEquals(2, SyntaxKind.OpenParentheseToken)) 
+        {
+            Error.Execute(logger, ErrorDefaults.UnknownDeclaration);
+        }
+        else if (!DataType.FromName(syntaxTokens[offset].PlainValue).IsTypeDefined()) 
+        {
+            Error.Execute(logger, ErrorDefaults.UnknownType);
+        }
+        DataType returnType = DataType.FromName(syntaxTokens[offset].PlainValue);
+        string functionName = syntaxTokens[++offset].PlainValue;
 
+        offset += 2; // going after '(' 
 
-        return null!;
+        Dictionary<string, FunctionArgument> args = new Dictionary<string, FunctionArgument>();
+        while (SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken)) 
+        {
+            if (!SaveEquals(0, SyntaxKind.TextToken) || !SaveEquals(1, SyntaxKind.TextToken))
+                Error.Execute(logger, ErrorDefaults.UnknownDeclaration);
+            else if (!DataType.FromName(syntaxTokens[offset].PlainValue).IsTypeDefined()) 
+                Error.Execute(logger, ErrorDefaults.UnknownType);
+            else if (args.ContainsKey(syntaxTokens[offset + 1].PlainValue))
+                Error.Execute(logger, ErrorDefaults.AlreadyDefined);
+
+            DataType argType = DataType.FromName(syntaxTokens[offset].PlainValue);
+            string argName = syntaxTokens[++offset].PlainValue;
+
+            args[argName] = new FunctionArgument(argName, argType);
+
+            if (SaveEquals(1, node => node.Kind != SyntaxKind.CommaToken) && 
+                !SaveEquals(1, SyntaxKind.CloseParentheseToken))
+                Error.Execute(logger, ErrorDefaults.UnknownDeclaration);
+
+            offset += SaveEquals(1, SyntaxKind.CloseParentheseToken) ? 1 : 2; // going to the next argument, skipping ','
+        }
+        offset++; // skiping ')'
+        FunctionArgument[] argsArr = args.Select(i => i.Value).ToArray();
+        return new FunctionHeader(returnType, functionName, argsArr);
+    }
+    private void ParseFunctionBody() 
+    {
+
     }
     private UseStatement ParseUseStatement(SyntaxToken referenceToken, bool isPath) 
     {

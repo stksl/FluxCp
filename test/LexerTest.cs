@@ -34,7 +34,7 @@ public class LexerTest
             new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.UseStatementToken, Offset = 0, Length = 3},
             new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.WhitespaceToken, Offset = 3, Length = 1},
             new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.TextToken, Offset = 4, Length = 3},
-            new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.BadToken, Offset = 7, Length = 1},
+            new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.DotToken, Offset = 7, Length = 1},
             new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.TextToken, Offset = 8, Length = 4},
             new SyntaxToken(SourceText.FromString(tests[1])) {Kind = SyntaxKind.SemicolonToken, Offset = 12, Length = 1},
         };
@@ -63,21 +63,21 @@ public class LexerTest
         };
         for(int i = 0; i < tests.Length; i++) 
         {
-            fixed(char* ptr = tests[i]) 
+            SourceText sourceText = SourceText.FromString(tests[i]);
+            List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
+            Lexer lexer = new Lexer(sourceText, null);
+            while (!lexer.EndOfFile()) 
             {
-                SourceText sourceText = new SourceText(ptr, tests[i].Length);
-                List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
-                Lexer lexer = new Lexer(sourceText, null);
-
-                while (!lexer.EndOfFile()) 
+                syntaxTokens.Add(lexer.Lex());
+            }
+            for(int j = 0; j < testsTokens[i].Length; j++) 
+            {
+                if (syntaxTokens[j] != testsTokens[i][j]) 
                 {
-                    syntaxTokens.Add(lexer.Lex());
+                    System.Console.WriteLine(syntaxTokens[j]);
+                    System.Console.WriteLine(testsTokens[i][j]);
                 }
-
-                for(int j = 0; j < testsTokens[i].Length; j++) 
-                {
-                    Assert.True(syntaxTokens[j] == testsTokens[i][j]);
-                }
+                Assert.True(syntaxTokens[j] == testsTokens[i][j]);
             }
         }
     }

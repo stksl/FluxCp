@@ -1,11 +1,6 @@
 struct int {}
 struct string {}
 struct Student        
-
-
-
 {
-
-
-           int      Myname;
+    int GetAge(string name, int name1)
 }

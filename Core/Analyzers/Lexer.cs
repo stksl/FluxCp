@@ -64,12 +64,24 @@ public sealed class Lexer
             return Current;
         }
         int prev = position;
+        // checking for comment firstly, just ignoring
+        if (SaveEquals(0, '#') && SaveEquals(1, '#')) 
+        {
+            position += 2;
+            while (SaveEquals(0, ch => ch != '#') || SaveEquals(1, ch => ch != '#')) position++;
+            position += 2;
+            return ChangeCurr(SyntaxKind.CommentToken, position - prev, false);
+        }
         switch (text[position])
         {
             case ' ':
                 return ChangeCurr(SyntaxKind.WhitespaceToken, 1);
             case ';':
                 return ChangeCurr(SyntaxKind.SemicolonToken, 1);
+            case '.':
+                return ChangeCurr(SyntaxKind.DotToken, 1);
+            case ',':
+                return ChangeCurr(SyntaxKind.CommaToken, 1);
             case '\n':
                 return ChangeCurr(SyntaxKind.EndOfLineToken, 1);
 
@@ -116,6 +128,8 @@ public sealed class Lexer
                 return ChangeCurr(SyntaxKind.StarToken, 1);
             case '/':
                 return ChangeCurr(SyntaxKind.SlashToken, 1);
+            case '\\':
+                return ChangeCurr(SyntaxKind.BackSlashToken, 1);
             case '%':
                 return ChangeCurr(SyntaxKind.PercentToken, 1);
 

@@ -8,6 +8,7 @@ public enum SyntaxKind
     PlusToken,
     MinusToken,
     SlashToken,
+    BackSlashToken,
     StarToken,
     PercentToken,
     EqualsToken,
@@ -18,7 +19,8 @@ public enum SyntaxKind
     OpenBracketToken,
     CloseBracketToken,
     SemicolonToken,
-
+    CommaToken,
+    DotToken,
     //logical operators
     IsEqualToken,
     IsLessToken,
