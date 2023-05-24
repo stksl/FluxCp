@@ -1,5 +1,5 @@
 namespace Fluxcp;
-public enum SyntaxKind
+public enum SyntaxKind : uint
 {
     //defaults
     BadToken = 0,
@@ -27,14 +27,6 @@ public enum SyntaxKind
     IsMoreToken,
     LogicalAndToken,
     LogicalOrToken,
-    //keywords
-    StructDefineToken,
-    ReturnStatementToken,
-    UseStatementToken,
-    IfStatementToken,
-    ElseStatementToken,
-    ForLoopToken,
-    WhileLoopToken,
     // boundaries
     EndOfLineToken,
     StartOfFileToken,
@@ -47,4 +39,12 @@ public enum SyntaxKind
     TextToken,
     SingleQuoteToken,
     DoubleQuotesToken,
+    //keywords
+    StructDefineToken = 0xff,
+    ReturnStatementToken,
+    UseStatementToken,
+    IfStatementToken,
+    ElseStatementToken,
+    ForLoopToken,
+    WhileLoopToken,
 }

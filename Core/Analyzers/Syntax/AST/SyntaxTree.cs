@@ -32,7 +32,7 @@ public class SyntaxTree
     {
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            // all the body are children
+            // all of the body is child element
             if (Next != null)
                 yield return Next!;
         }

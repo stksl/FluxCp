@@ -9,6 +9,6 @@ public sealed class UseStatement : SyntaxNode
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {
-        yield return null!;
+        return Array.Empty<SyntaxNode>();
     }
 }

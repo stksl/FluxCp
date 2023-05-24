@@ -1,8 +1,8 @@
 namespace Fluxcp;
 public static class DataTypeExtension 
 {
-    public static bool IsTypeDefined(this DataType dataType) 
+    public static bool IsTypeDefined(this DataType dataType, CompilationUnit compUnit) 
     {
-        return LocalStorage.Items.ContainsKey(dataType.TypeID);
+        return compUnit.LocalStorage.GetLocalType(dataType) != null;
     }
 }

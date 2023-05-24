@@ -2,3 +2,4 @@ Version - compiler version (beta, prerelease, stable) and a floating-point numbe
     The first compiler version is 'beta1.0'.
 EntryPoint - entry point for the compiler (you can use '../', './')
 LogInformation - recommended always 'true'. Prints infos, warnings and errors to the stdout.
+Output - final output type. 'exec' for executable and 'lib' for library

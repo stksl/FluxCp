@@ -8,6 +8,6 @@ public sealed class ReturnStatement : SyntaxNode
     }
     public override IEnumerable<SyntaxNode> GetChildren() 
     {
-        yield return null!;
+        return Array.Empty<SyntaxNode>();
     }
 }

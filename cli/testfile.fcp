@@ -1,6 +1,19 @@
-struct int {}
-struct string {}
-struct Student        
+use "SomeLib";
+struct byte {}
+struct i32
 {
-    int GetAge(string name, int name1)
+    byte first;
+    byte second;
+    byte someFunction(byte arg1,    i32   argument2) 
+    {
+        i32 myint = 1505;
+        byte somebyte = "asd";
+        somebyte = myint;
+        myint = somebyte;
+    }
+    byte third;
+
+}
+i32 Main() 
+{   
 }

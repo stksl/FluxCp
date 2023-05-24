@@ -1,12 +1,12 @@
 namespace Fluxcp;
-public sealed class StructField : SyntaxNode 
+public sealed class FunctionArgument : SyntaxNode
 {
     public readonly string Name;
     public readonly DataType DataType;
-    public StructField(string name, DataType dataType)
+    public FunctionArgument(string name, DataType typeId)
     {
         Name = name;
-        DataType = dataType;
+        DataType = typeId;
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {

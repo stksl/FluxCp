@@ -15,15 +15,16 @@ public class CompilationTest
         {
             string task = LoadTest(i).Result;
             Logger logger = new Logger();
+            CompilationUnit compilationUnit = new CompilationUnit();
 
-            Lexer lexer = new Lexer(SourceText.FromString(task), logger);
+            Lexer lexer = new Lexer(SourceText.FromString(task), logger, compilationUnit);
             List<SyntaxToken> tokens = new List<SyntaxToken>();
             while (!lexer.EndOfFile())
             {
                 tokens.Add(lexer.Lex());
             }
 
-            Parser parser = new Parser(tokens.ToImmutableArray(), logger);
+            Parser parser = new Parser(tokens.ToImmutableArray(), logger, compilationUnit);
             SyntaxTree tree = parser.Parse();
         }
     }

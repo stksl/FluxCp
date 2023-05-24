@@ -1,4 +1,4 @@
-﻿#define beta10
+﻿
 using System.Text;
 namespace Fluxcp;
 // Generates tokens
@@ -8,9 +8,11 @@ public sealed class Lexer
     #region DI
     private readonly SourceText text;
     private readonly ILogger? logger;
+    private readonly CompilationUnit compilationUnit;
     #endregion
     private int position;
     private object _sync = new object();
+    private int currLine = 1;
     private SyntaxToken current;
     public SyntaxToken Current => (SyntaxToken)current.Clone();
 
@@ -25,16 +27,17 @@ public sealed class Lexer
         ("return", SyntaxKind.ReturnStatementToken),
         ("struct", SyntaxKind.StructDefineToken)
     };
-    public unsafe Lexer(SourceText tr, ILogger? logger_)
+    public unsafe Lexer(SourceText tr, ILogger? logger_, CompilationUnit compilationUnit_)
     {
         text = tr;
         position = 0;
-        current = new SyntaxToken(text) { Kind = SyntaxKind.StartOfFileToken, Length = 0, Offset = 0 };
+        current = new SyntaxToken(text, 0) { Kind = SyntaxKind.StartOfFileToken, Length = 0, Offset = 0 };
         logger = logger_;
+        compilationUnit = compilationUnit_;
     }
     private SyntaxToken ChangeCurr(SyntaxKind kind, int length, bool changeOffset = true) 
     {
-        current = new SyntaxToken(text) {Kind = kind, Offset = position, Length = length};
+        current = new SyntaxToken(text, currLine) {Kind = kind, Offset = position, Length = length};
         if (changeOffset) position += length;
 
         return Current;
@@ -83,6 +86,7 @@ public sealed class Lexer
             case ',':
                 return ChangeCurr(SyntaxKind.CommaToken, 1);
             case '\n':
+                currLine++;
                 return ChangeCurr(SyntaxKind.EndOfLineToken, 1);
 
             case >= '0' and <= '9':

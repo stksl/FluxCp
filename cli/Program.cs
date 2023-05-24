@@ -15,20 +15,20 @@ namespace Fluxcp.Cli
         public static unsafe void Main()
         {
             Logger logger = new Logger();
+            CompilationUnit compilationUnit = new CompilationUnit();
             string text = GetStringAsync().Result;
             SourceText tr = SourceText.FromString(text);
-
             List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
-            Lexer lexer = new Lexer(tr, logger);
+            Lexer lexer = new Lexer(tr, logger, compilationUnit);
 
             while (!lexer.EndOfFile()) 
             {
                 var curr = lexer.Lex();
                 syntaxTokens.Add(curr);
             }
-            System.Console.WriteLine(syntaxTokens.Where(i => i.Kind == SyntaxKind.CommentToken).First().Length);
-            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger);
+            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger, compilationUnit);
             var tree = parser.Parse();
+            tree.Root.Print(logger);
         }
     }
     internal class Logger : ILogger
@@ -36,7 +36,7 @@ namespace Fluxcp.Cli
         public void ShowDebug(string msg)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            System.Console.WriteLine("\\Debug-only:\\ " + msg);
+            System.Console.WriteLine(msg);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
