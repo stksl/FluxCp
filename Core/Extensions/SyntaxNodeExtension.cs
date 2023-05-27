@@ -1,3 +1,4 @@
+using Fluxcp.Syntax;
 namespace Fluxcp;
 public static class SyntaxNodeExtension 
 {
@@ -10,17 +11,14 @@ public static class SyntaxNodeExtension
         }
         return node;
     }
-    public static void Print(this SyntaxNode node, ILogger logger) 
+    public static string Print(this SyntaxNode node, string nesting = "") 
     {
-        void print(SyntaxNode syntaxNode, string nested) 
-        {
-            logger.ShowDebug(nested + syntaxNode.GetType().Name);
-            foreach(SyntaxNode child in syntaxNode.GetChildren()) print(child, nested + "\t");
+        if (node == null) return string.Empty;
 
-            if (syntaxNode.Next != null && syntaxNode.Next != node.Next)
-                print(syntaxNode.Next, nested);
-        }
-
-        print(node, "");
+        System.Text.StringBuilder sb = new System.Text.StringBuilder("\n" + nesting + node.GetType().Name);
+        foreach(SyntaxNode child in node.GetChildren()) sb.Append(Print(child, nesting + "\t"));
+        if (node is not SyntaxTree.ProgramBound)
+            sb.Append(Print(node.Next!, nesting));
+        return sb.ToString();
     }
 }

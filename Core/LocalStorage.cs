@@ -1,3 +1,4 @@
+using Fluxcp.Syntax;
 namespace Fluxcp;
 // a set of hashmaps for local types, methods and variables
 public sealed class LocalStorage

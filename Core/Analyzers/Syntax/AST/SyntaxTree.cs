@@ -1,3 +1,4 @@
+using Fluxcp.Syntax;
 namespace Fluxcp;
 // AST (Abstract Syntax Tree). Contains the root node.
 //example of AST for the code:
@@ -28,8 +29,9 @@ public class SyntaxTree
     {
         Root = new ProgramBound();
     }
-    private class ProgramBound : SyntaxNode
+    public class ProgramBound : SyntaxNode
     {
+        internal ProgramBound() {}
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             // all of the body is child element

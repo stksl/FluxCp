@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public sealed class IfStatement : LogicalStatement 
 {
     public IfStatement(ExpressionNode exp, SyntaxNode body, ElseStatement? elseStatement)

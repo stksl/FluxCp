@@ -1,4 +1,10 @@
-struct int 
-{
-    ## test ## int instance;
+## test case 0 ##
+
+struct   int 
+     {
+                    int instance;
+    
+    int somefunction(int      arg1    ,int arg2)  {
+      }
 }
+

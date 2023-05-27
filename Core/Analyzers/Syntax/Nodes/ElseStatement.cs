@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public sealed class ElseStatement : LogicalStatement 
 {
     public bool IsElseIf => NextIfStatement! != null!;

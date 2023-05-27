@@ -8,5 +8,5 @@ public interface ILogger
     // display warning (maybe to the stdout)
     void ShowWarning(string msg);
     // display error that stopped FluxCp compiler. (maybe to the stdout)
-    void ShowError(string msg);   
+    void ShowError(string msg); 
 }

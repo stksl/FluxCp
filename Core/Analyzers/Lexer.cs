@@ -1,5 +1,6 @@
-﻿
-using System.Text;
+﻿using System.Text;
+using Fluxcp.Syntax;
+
 namespace Fluxcp;
 // Generates tokens
 
@@ -66,33 +67,40 @@ public sealed class Lexer
             else logger?.ShowDebug("Lexing a finished text");
             return Current;
         }
-        int prev = position;
-        // checking for comment firstly, just ignoring
-        if (SaveEquals(0, '#') && SaveEquals(1, '#')) 
-        {
-            position += 2;
-            while (SaveEquals(0, ch => ch != '#') || SaveEquals(1, ch => ch != '#')) position++;
-            position += 2;
-            return ChangeCurr(SyntaxKind.CommentToken, position - prev, false);
-        }
         switch (text[position])
         {
-            case ' ':
-                return ChangeCurr(SyntaxKind.WhitespaceToken, 1);
             case ';':
                 return ChangeCurr(SyntaxKind.SemicolonToken, 1);
             case '.':
                 return ChangeCurr(SyntaxKind.DotToken, 1);
             case ',':
                 return ChangeCurr(SyntaxKind.CommaToken, 1);
-            case '\n':
-                currLine++;
-                return ChangeCurr(SyntaxKind.EndOfLineToken, 1);
 
             case >= '0' and <= '9':
                 return LexNumber();
         }
         // pipeline
+        return ParseTrivia();
+    }
+    private SyntaxToken ParseTrivia() 
+    {
+        switch(text[position]) 
+        {
+            case '#' when SaveEquals(1, '#'):
+                int prev = position;
+                position += 2;
+                while (SaveEquals(0, ch => ch != '#') || SaveEquals(1, ch => ch != '#')) position++;
+                position += 2;
+                return ChangeCurr(SyntaxKind.CommentToken, position - prev, false);
+            case ' ':
+                return ChangeCurr(SyntaxKind.WhitespaceToken, 1);
+            case '\n':
+                currLine++;
+                return ChangeCurr(SyntaxKind.EndOfLineToken, 1);
+
+        }
+
+        //pipeline
         return LexBaseOperators();
     }
     private SyntaxToken LexBaseOperators() 

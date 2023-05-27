@@ -2,11 +2,11 @@ namespace Fluxcp.Errors;
 public sealed class Error 
 {
     #region DI
-    private readonly ILogger logger;
+    private readonly ILogger? logger;
     private readonly ErrorDefaults Id;
     private readonly int line;
     #endregion
-    private Error(ErrorDefaults id, ILogger logger_, int line_)
+    private Error(ErrorDefaults id, ILogger? logger_, int line_)
     {
         Id = id;
         logger = logger_;
@@ -14,10 +14,10 @@ public sealed class Error
     }
     public void Throw() 
     {
-        logger.ShowError($"line {line}: " + Id.ToString());
+        logger?.ShowError($"line {line}: " + Id.ToString());
         Environment.Exit((int)Id);
     }
-    public static void Execute(ILogger logger, ErrorDefaults errId, int line) 
+    public static void Execute(ILogger? logger, ErrorDefaults errId, int line) 
     {
         new Error(errId, logger, line).Throw();
     }

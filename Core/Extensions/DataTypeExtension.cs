@@ -1,3 +1,4 @@
+
 namespace Fluxcp;
 public static class DataTypeExtension 
 {

@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public sealed class FunctionDeclaration : SyntaxNode 
 {
     public readonly FunctionHeader Header;
@@ -14,5 +14,14 @@ public sealed class FunctionDeclaration : SyntaxNode
     {
         yield return Header;
         yield return Body;
+    }
+    public static new FunctionDeclaration Parse(Parser parser) 
+    {
+        ref int offset = ref parser.offset;
+
+        FunctionHeader header = FunctionHeader.Parse(parser);
+        FunctionBodyBound bodyBound = FunctionBodyBound.Parse(parser, header);
+
+        return new FunctionDeclaration(header, bodyBound);
     }
 }

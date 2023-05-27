@@ -1,30 +1,31 @@
 using System.Collections.Immutable;
 using Fluxcp.Errors;
+using Fluxcp.Syntax;
 namespace Fluxcp;
 public sealed class Parser
 {
     #region DI
-    private readonly ImmutableArray<SyntaxToken> syntaxTokens;
-    private readonly ILogger logger;
-    private readonly CompilationUnit compilationUnit;
+    internal readonly ImmutableArray<SyntaxToken> syntaxTokens;
+    internal readonly ILogger? logger;
+    internal readonly CompilationUnit compilationUnit;
     #endregion
-    private int offset;
+    internal int offset;
     private object _sync = new object();
-    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, ILogger logger_, CompilationUnit compilationUnit_)
+    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, ILogger? logger_, CompilationUnit compilationUnit_)
     {
-        // TODO: ADD LEADING TRIVIA 
+        // see todo.txt for more info on that. will be fixed
         syntaxTokens = syntaxTokens_.Where(token => token.Kind != SyntaxKind.WhitespaceToken &&
             token.Kind != SyntaxKind.CommentToken && token.Kind != SyntaxKind.EndOfLineToken).ToImmutableArray();
 
         logger = logger_;
         compilationUnit = compilationUnit_;
     }
-    private bool SaveEquals(int offset, Func<SyntaxToken, bool> pred)
+    internal bool SaveEquals(int offset, Func<SyntaxToken, bool> pred)
     {
         return this.offset + offset < syntaxTokens.Length && pred(syntaxTokens[this.offset + offset]);
     }
     // simplifier
-    private bool SaveEquals(int offset, SyntaxKind kind)
+    internal bool SaveEquals(int offset, SyntaxKind kind)
     {
         return SaveEquals(offset, i => i.Kind == kind);
     }
@@ -43,23 +44,34 @@ public sealed class Parser
         while (SaveEquals(0, SyntaxKind.UseStatementToken))
         {
             // finding the last element of out tree, for now its only UseStatements.
-            last.Next = ParseUseStatement();
+            last.Next = UseStatement.Parse(this);
             last = last.Next;
         }
 
         while (offset < syntaxTokens.Length - 1)
         {
-            // parsing functons or structs
+            // parsing only functons or structs
             if (SaveEquals(0, SyntaxKind.StructDefineToken))
             {
-                last.Next = ParseStructDefine();
+                last.Next = StructDefine.Parse(this);
                 last = last.Next;
             }
             else if (SaveEquals(0, SyntaxKind.TextToken) &&
                 SaveEquals(1, SyntaxKind.TextToken) &&
                 SaveEquals(2, SyntaxKind.OpenParentheseToken))
             {
-                FunctionDeclaration function = ParseFunctionDeclaration();
+                if (compilationUnit.LocalStorage.GetLocalFunc(syntaxTokens[offset + 1].PlainValue) != null)
+                    Error.Execute(logger, ErrorDefaults.AlreadyDefined, syntaxTokens[offset + 1].Line);
+                
+                compilationUnit.LocalStorage.AddLocalFunc(new FunctionDeclaration(
+                    new FunctionHeader(
+                        null!, syntaxTokens[offset + 1].PlainValue, null!
+                    ),
+                    null!
+                )); // for now, the thing is we have to allow recursion
+
+                FunctionDeclaration function = FunctionDeclaration.Parse(this);
+                compilationUnit.LocalStorage.AddLocalFunc(function);
                 last.Next = function;
                 last = last.Next;
             }
@@ -133,7 +145,7 @@ public sealed class Parser
     private FunctionDeclaration ParseFunctionDeclaration()
     {
         FunctionHeader header = ParseFunctionHeader();
-        FunctionBodyBound bodyBound = ParseFunctionBody();
+        FunctionBodyBound bodyBound = ParseFunctionBody(header);
 
         return new FunctionDeclaration(header, bodyBound);
     }
@@ -149,6 +161,7 @@ public sealed class Parser
         {
             Error.Execute(logger, ErrorDefaults.UnknownType, syntaxTokens[offset].Line);
         }
+
         DataType returnType = DataType.FromName(syntaxTokens[offset].PlainValue);
         string functionName = syntaxTokens[++offset].PlainValue;
 
@@ -180,7 +193,7 @@ public sealed class Parser
         FunctionArgument[] argsArr = args.Select(i => i.Value).ToArray();
         return new FunctionHeader(returnType, functionName, argsArr);
     }
-    private FunctionBodyBound ParseFunctionBody()
+    private FunctionBodyBound ParseFunctionBody(FunctionHeader header)
     {
         if (!SaveEquals(0, SyntaxKind.OpenBraceToken))
         {
@@ -191,7 +204,7 @@ public sealed class Parser
         SyntaxNode last = body.Child;
         while (SaveEquals(0, node => node.Kind != SyntaxKind.CloseBraceToken))
         {
-            last.Next = ParseSyntaxNode(0);
+            last.Next = ParseSyntaxNode(header);
             last = last.Next;
         }
         body.Length = offset - body.Position;
@@ -200,7 +213,7 @@ public sealed class Parser
         return body;
     }
     // main method for parsing syntax nodes in functions
-    private SyntaxNode ParseSyntaxNode(int level)
+    private SyntaxNode ParseSyntaxNode(FunctionHeader header)
     {
         SyntaxNode node = null!;
         if (SaveEquals(0, SyntaxKind.TextToken) && SaveEquals(1, SyntaxKind.TextToken))
@@ -213,16 +226,16 @@ public sealed class Parser
             {
                 Error.Execute(logger, ErrorDefaults.UnknownType, syntaxTokens[offset].Line);
             }
-            else if (compilationUnit.LocalStorage.GetLocalVar(varName) != null)
+            else if (compilationUnit.LocalStorage.GetLocalVar(varName) != null || header.Args.FirstOrDefault(arg => arg.Name == varName) != null)
             {
                 Error.Execute(logger, ErrorDefaults.AlreadyDefined, syntaxTokens[offset + 1].Line);
             }
 
             // saving local variable name and level
-            node = new VarDeclarationNode(varName, level, varType);
-            compilationUnit.LocalStorage.AddLocalVar((node as VarDeclarationNode)!);
+            node = new VarDeclarationNode(varName, 0, varType, null); // 0 as level FOR NOW!
+            compilationUnit.LocalStorage.AddLocalVar((VarDeclarationNode)node);
 
-            offset++; // skipping to variable name (if this was declaration and setting value)
+            offset += SaveEquals(2, SyntaxKind.EqualsToken) ? 1 : 2; // skipping to var declaration/semicolon
         }
         if (SaveEquals(0, SyntaxKind.TextToken) && SaveEquals(1, SyntaxKind.EqualsToken))
         {
@@ -231,6 +244,7 @@ public sealed class Parser
             VariableValue value = ParseVariableValue();
             if (node is VarDeclarationNode varNode)
             {
+                // setting init value for simplicity (the only time that parser sets variable value directly)
                 varNode.Value = value;
             }
             else node = value;
@@ -238,18 +252,42 @@ public sealed class Parser
         else if (SaveEquals(0, SyntaxKind.TextToken) && SaveEquals(1, SyntaxKind.OpenParentheseToken))
         {
             // probably function call
+            FunctionDeclaration? localFunc = compilationUnit.LocalStorage.GetLocalFunc(syntaxTokens[offset].PlainValue);
+            if (localFunc == null)
+                Error.Execute(logger, ErrorDefaults.UnknownReference, syntaxTokens[offset].Line);
+            
+            offset += 2; // skipping to passed argument or ')'
+            List<VariableValue> passedVals = new List<VariableValue>();
+            while (SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken)) 
+            {
+                VariableValue passedVal = ParseVariableValue();
+                passedVals.Add(passedVal);
+
+                if (!SaveEquals(0, SyntaxKind.CommaToken) && SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken)) 
+                    Error.Execute(logger, ErrorDefaults.UnknownDeclaration, syntaxTokens[offset].Line);
+
+                offset += SaveEquals(0, SyntaxKind.CloseParentheseToken) ? 0 : 1;
+            }
+            offset++; // skipping ')'
+            node = new FunctionCall(localFunc!, passedVals.ToArray());
         }
         else if (SaveEquals(0, node => SyntaxFacts.IsKeyword(node.Kind)))
         {
             // keywords
+            node = ParseKeywords();
         }
 
-
+        // all of the statements before have to skip current token to semicolon (expected)
         if (!SaveEquals(0, SyntaxKind.SemicolonToken))
             Error.Execute(logger, ErrorDefaults.SemicolonExpected, syntaxTokens[offset].Line);
 
         offset++; // skipping ';'
         return node!;
+    }
+    private SyntaxNode ParseKeywords()
+    {
+
+        return null!;
     }
     private VariableValue ParseVariableValue()
     {
@@ -284,18 +322,17 @@ public sealed class Parser
     }
     private VariableValue ParseCopyVarValue() 
     {
-        if (!SaveEquals(0, SyntaxKind.TextToken)) 
+        // 0 is copyFrom and -2 is copyTo
+        // (-2)copyTo = (0)copyFrom;
+        if (!SaveEquals(0, SyntaxKind.TextToken) && !SaveEquals(-2, SyntaxKind.TextToken)) 
             Error.Execute(logger, ErrorDefaults.UnknownDeclaration, syntaxTokens[offset].Line);
         
-        VarDeclarationNode? varNode = compilationUnit.LocalStorage.GetLocalVar(syntaxTokens[offset].PlainValue);
-        if (varNode == null)
+        VarDeclarationNode? copyFrom = compilationUnit.LocalStorage.GetLocalVar(syntaxTokens[offset].PlainValue);
+        VarDeclarationNode? copyTo = compilationUnit.LocalStorage.GetLocalVar(syntaxTokens[offset - 2].PlainValue);
+        if (copyFrom == null || copyTo == null)
             Error.Execute(logger, ErrorDefaults.UnknownReference, syntaxTokens[offset].Line);
         offset++; // skipping name
-        return new CopyValue(varNode!.Value!);
-    }
-    private SyntaxNode ParseKeywords()
-    {
-        return null!;
+        return new CopyValue(copyFrom!, copyTo!);
     }
     private UseStatement ParseUseStatement()
     {

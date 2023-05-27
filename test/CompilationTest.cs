@@ -3,56 +3,34 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
-
+using Fluxcp.Syntax;
 namespace Fluxcp.Tests;
 public class CompilationTest
 {
-
     [Fact]
-    public void Main_TEST()
+    public async Task Main_TEST()
     {
         for (int i = 0; i < 1; i++)
         {
-            string task = LoadTest(i).Result;
-            Logger logger = new Logger();
             CompilationUnit compilationUnit = new CompilationUnit();
-
-            Lexer lexer = new Lexer(SourceText.FromString(task), logger, compilationUnit);
-            List<SyntaxToken> tokens = new List<SyntaxToken>();
-            while (!lexer.EndOfFile())
+            string text = await ReadAllFrom($"/home/ubuntupc/Desktop/FluxCp/test/test_files/test{i}.fcp");
+            SourceText tr = SourceText.FromString(text);
+            List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
+            Lexer lexer = new Lexer(tr, null, compilationUnit);
+            while (!lexer.EndOfFile()) 
             {
-                tokens.Add(lexer.Lex());
+                var curr = lexer.Lex();
+                syntaxTokens.Add(curr);
             }
-
-            Parser parser = new Parser(tokens.ToImmutableArray(), logger, compilationUnit);
-            SyntaxTree tree = parser.Parse();
+            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), null, compilationUnit);
+            var tree = parser.Parse();
+            string expected = await ReadAllFrom($"/home/ubuntupc/Desktop/FluxCp/test/test_files/expected/test{i}.txt");
+            Assert.True(tree.Root.Print() == expected);
         }
     }
-    private async Task<string> LoadTest(int i)
+    private async Task<string> ReadAllFrom(string path)
     {
-        using StreamReader sr = new StreamReader($"/home/ubuntupc/Desktop/FluxCp/test/test_files/test{i}.fcp");
+        using StreamReader sr = new StreamReader(path);
         return await sr.ReadToEndAsync();
-    }
-    private class Logger : ILogger
-    {
-        public void ShowDebug(string msg)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void ShowError(string msg)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void ShowMsg(string msg)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void ShowWarning(string msg)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

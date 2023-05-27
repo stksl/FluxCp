@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public sealed class BinaryExpression : ExpressionNode
 {
     public BinaryExpression(VariableValue left, VariableValue right, SyntaxKind operatorKind)

@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public sealed class ReturnStatement : SyntaxNode 
 {
     public object? Value;

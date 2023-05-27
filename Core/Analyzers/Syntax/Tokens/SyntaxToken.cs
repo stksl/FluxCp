@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 // Base class for all of the syntax tokens
 public class SyntaxToken : ICloneable
 {

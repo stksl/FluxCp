@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
+using Fluxcp.Syntax;
 namespace Fluxcp.Cli
 {
     public class Program
@@ -14,13 +16,14 @@ namespace Fluxcp.Cli
         }
         public static unsafe void Main()
         {
-            Logger logger = new Logger();
+            ILogger logger = new Logger();
             CompilationUnit compilationUnit = new CompilationUnit();
             string text = GetStringAsync().Result;
             SourceText tr = SourceText.FromString(text);
             List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
             Lexer lexer = new Lexer(tr, logger, compilationUnit);
-
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             while (!lexer.EndOfFile()) 
             {
                 var curr = lexer.Lex();
@@ -28,10 +31,13 @@ namespace Fluxcp.Cli
             }
             Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger, compilationUnit);
             var tree = parser.Parse();
-            tree.Root.Print(logger);
+            sw.Stop();
+            logger.ShowDebug(tree.Root.Print());
+            System.Console.WriteLine(sw.ElapsedMilliseconds+ "ms");
         }
+        
     }
-    internal class Logger : ILogger
+    public sealed class Logger : ILogger
     {
         public void ShowDebug(string msg)
         {

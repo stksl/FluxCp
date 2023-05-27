@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public static class SyntaxFacts 
 {
     public static bool IsKeyword(SyntaxKind kind) 

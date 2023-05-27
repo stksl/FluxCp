@@ -1,4 +1,4 @@
-namespace Fluxcp;
+namespace Fluxcp.Syntax;
 public enum SyntaxKind : uint
 {
     //defaults
