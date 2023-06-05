@@ -3,9 +3,9 @@ namespace Fluxcp.Syntax;
 public sealed class FunctionDeclaration : SyntaxNode 
 {
     public readonly FunctionHeader Header;
-    public readonly FunctionBodyBound Body;
+    public readonly BodyBound Body;
 
-    public FunctionDeclaration(FunctionHeader header, FunctionBodyBound body)
+    public FunctionDeclaration(FunctionHeader header, BodyBound body)
     {
         Header = header;
         Body = body;
@@ -20,7 +20,7 @@ public sealed class FunctionDeclaration : SyntaxNode
         ref int offset = ref parser.offset;
 
         FunctionHeader header = FunctionHeader.Parse(parser);
-        FunctionBodyBound bodyBound = FunctionBodyBound.Parse(parser, header);
+        BodyBound bodyBound = BodyBound.Parse(parser);
 
         return new FunctionDeclaration(header, bodyBound);
     }

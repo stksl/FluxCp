@@ -1,11 +1,11 @@
 using Fluxcp.Errors;
 
 namespace Fluxcp.Syntax;
-public sealed class FunctionCall : SyntaxNode
+public sealed class FunctionCall : VariableValue
 {
     public FunctionDeclaration Function;
     public VariableValue[] PassedVals;
-    public FunctionCall(FunctionDeclaration function, VariableValue[] passedVals)
+    public FunctionCall(FunctionDeclaration function, VariableValue[] passedVals) : base(false)
     {
         Function = function;
         PassedVals = passedVals;
@@ -26,7 +26,7 @@ public sealed class FunctionCall : SyntaxNode
         List<VariableValue> passedVals = new List<VariableValue>();
         while (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))
         {
-            VariableValue passedVal = VariableValue.Parse(parser);
+            VariableValue passedVal = VariableValue.Parse(parser, false);
             passedVals.Add(passedVal);
 
             if (!parser.SaveEquals(0, SyntaxKind.CommaToken) && parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))

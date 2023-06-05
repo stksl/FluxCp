@@ -1,13 +1,23 @@
+using Fluxcp.Errors;
 namespace Fluxcp.Syntax;
 public sealed class ReturnStatement : SyntaxNode 
 {
-    public object? Value;
-    public ReturnStatement(object? value)
+    public VariableValue Value;
+    public ReturnStatement(VariableValue value)
     {
         Value = value;
     }
     public override IEnumerable<SyntaxNode> GetChildren() 
     {
-        return Array.Empty<SyntaxNode>();
+        yield return Value;
+    }
+    public static new ReturnStatement Parse(Parser parser) 
+    {
+        if (!parser.SaveEquals(0, SyntaxKind.ReturnStatementToken)) 
+        {
+            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+        }
+        parser.offset++;
+        return new ReturnStatement(VariableValue.Parse(parser, true));
     }
 }

@@ -12,13 +12,17 @@ struct i32
 }
 i32 Main() 
 {   
-    byte b = 123;
-    byte asd = b;
-    b = asd;
-    asd = b;
+    i32 a = \123 > 2 & Main()\;
 }
 byte NotMain(byte test, byte test2) 
 {
-    NotMain(123, 32);
+    NotMain(1, 321);
     Main();
+    i32 x = 123;
+    if \true > 1 
+    && 
+    false < "asdasd"\
+    {
+        i32 y = 12;
+    };
 }

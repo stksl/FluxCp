@@ -1,3 +1,4 @@
+using System.Collections;
 using Fluxcp.Syntax;
 namespace Fluxcp;
 // AST (Abstract Syntax Tree). Contains the root node.
@@ -22,7 +23,7 @@ namespace Fluxcp;
 //
 //
 // 
-public class SyntaxTree 
+public class SyntaxTree
 {
     public SyntaxNode Root {get; private set;}
     public SyntaxTree()

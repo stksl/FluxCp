@@ -87,12 +87,12 @@ public sealed class Parser
         Stack<SyntaxKind> ops = new Stack<SyntaxKind>();
         Stack<int> vals = new Stack<int>();
 
-        for(int i = 0; i < SyntaxTokens.Count; i++) 
+        for(int i = 0; i < syntaxTokens.Length; i++) 
         {
-            switch(SyntaxTokens[i].Kind) 
+            switch(syntaxTokens[i].Kind) 
             {
                 case SyntaxKind.OpenParentheseToken:
-                    ops.Push(SyntaxTokens[i].Kind);
+                    ops.Push(syntaxTokens[i].Kind);
                     break;
                 case SyntaxKind.CloseParentheseToken:
                     while (ops.Peek() != SyntaxKind.OpenParentheseToken) 
@@ -102,17 +102,17 @@ public sealed class Parser
                     ops.Pop();
                     break;
                 case SyntaxKind.NumberToken:
-                    vals.Push(((NumberToken)SyntaxTokens[i]).Value);
+                    vals.Push(0); // for now
                     break;
                 case SyntaxKind.PlusToken:
                 case SyntaxKind.MinusToken:
                 case SyntaxKind.SlashToken:
                 case SyntaxKind.StarToken:
-                    while (ops.Count > 0 && CheckPriority(SyntaxTokens[i].Kind, ops.Peek())) 
+                    while (ops.Count > 0 && CheckPriority(syntaxTokens[i].Kind, ops.Peek())) 
                     {
                         vals.Push(DoOperation(vals.Pop(), vals.Pop(), ops.Pop()));
                     }
-                    ops.Push(SyntaxTokens[i].Kind);
+                    ops.Push(syntaxTokens[i].Kind);
                     break;
                 default:
                     break;

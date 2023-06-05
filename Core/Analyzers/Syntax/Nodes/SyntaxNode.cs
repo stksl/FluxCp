@@ -21,6 +21,8 @@ public abstract class SyntaxNode
     {
         return null!;
     }
+
+
     // next node
     public SyntaxNode? Next { get; internal set; }
     // previous node

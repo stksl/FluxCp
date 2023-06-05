@@ -26,7 +26,9 @@ public sealed class Lexer
         ("for", SyntaxKind.ForLoopToken),
         ("while", SyntaxKind.WhileLoopToken),
         ("return", SyntaxKind.ReturnStatementToken),
-        ("struct", SyntaxKind.StructDefineToken)
+        ("struct", SyntaxKind.StructDefineToken),
+        ("true", SyntaxKind.TrueToken),
+        ("false", SyntaxKind.FalseToken)
     };
     public unsafe Lexer(SourceText tr, ILogger? logger_, CompilationUnit compilationUnit_)
     {
@@ -158,6 +160,8 @@ public sealed class Lexer
     {
         switch(text[position]) 
         {
+            case '!' when SaveEquals(1, '='):
+                return ChangeCurr(SyntaxKind.IsNotEqualToken, 2);
             case '&':
                 if (SaveEquals(1, '&')) position++;
                 return ChangeCurr(SyntaxKind.LogicalAndToken, 1);

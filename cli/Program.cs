@@ -7,9 +7,9 @@ namespace Fluxcp.Cli
 {
     public class Program
     {
-        public static async Task<string> GetStringAsync() 
+        public static async Task<string> GetStringAsync()
         {
-            using(StreamReader sr = new StreamReader("./testfile.fcp")) 
+            using (StreamReader sr = new StreamReader("./testfile.fcp"))
             {
                 return await sr.ReadToEndAsync();
             }
@@ -24,18 +24,37 @@ namespace Fluxcp.Cli
             Lexer lexer = new Lexer(tr, logger, compilationUnit);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            while (!lexer.EndOfFile()) 
+            while (!lexer.EndOfFile())
             {
                 var curr = lexer.Lex();
                 syntaxTokens.Add(curr);
             }
             Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger, compilationUnit);
-            var tree = parser.Parse();
-            sw.Stop();
+            SyntaxTree tree = parser.Parse();
+            var node = GetNode(typeof(BinaryExpression), tree.Root.Next!);
             logger.ShowDebug(tree.Root.Print());
-            System.Console.WriteLine(sw.ElapsedMilliseconds+ "ms");
+            sw.Stop();
+            logger.ShowDebug(sw.ElapsedMilliseconds + "ms");
         }
-        
+        private static SyntaxNode GetNode(Type type, SyntaxNode node_)
+        {
+            if (node_ is BinaryExpression)
+            {
+                return node_;
+            }
+            SyntaxNode node = null!;
+            foreach (var child in node_.GetChildren())
+            {
+                node = GetNode(type, child);
+                if (node is BinaryExpression) return node;
+            }
+            if (node_.Next != null)
+            {
+                node = GetNode(type, node_.Next);
+                if (node is BinaryExpression) return node;
+            }
+            return null!;
+        }
     }
     public sealed class Logger : ILogger
     {

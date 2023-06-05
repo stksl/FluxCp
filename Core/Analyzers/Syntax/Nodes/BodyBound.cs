@@ -1,23 +1,19 @@
 using Fluxcp.Errors;
-
 namespace Fluxcp.Syntax;
-public sealed class FunctionBodyBound : SyntaxNode
+public sealed class BodyBound : SyntaxNode 
 {
-    // start of the body (can be used as syntax tokens offset)
     public readonly int Position;
-    // length of the body
-    public int Length { get; internal set; }
-    public SyntaxNode Child;
-    public FunctionBodyBound(int position)
+    public int Length {get; internal set;}
+    public readonly SyntaxNode Child;
+    public BodyBound(int pos)
     {
-        Position = position;
         Child = SyntaxNode.Empty;
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {
-        yield return Child!;
+        yield return Child;
     }
-    public static FunctionBodyBound Parse(Parser parser, FunctionHeader header)
+    public static new BodyBound Parse(Parser parser) 
     {
         ref int offset = ref parser.offset;
         if (!parser.SaveEquals(0, SyntaxKind.OpenBraceToken))
@@ -25,11 +21,11 @@ public sealed class FunctionBodyBound : SyntaxNode
             Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
         offset++; // skipping '{'
-        FunctionBodyBound body = new FunctionBodyBound(offset);
+        BodyBound body = new BodyBound(offset);
         SyntaxNode last = body.Child;
         while (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseBraceToken))
         {
-            last.Next = ParseBody(parser, header);
+            last.Next = ParseNext(parser);
             last = last.Next;
         }
         body.Length = offset - body.Position;
@@ -37,7 +33,7 @@ public sealed class FunctionBodyBound : SyntaxNode
         offset++; // skipping '}'
         return body;
     }
-    private static SyntaxNode ParseBody(Parser parser, FunctionHeader header)
+    private static SyntaxNode ParseNext(Parser parser)
     {
         ref int offset = ref parser.offset;
 
@@ -50,7 +46,7 @@ public sealed class FunctionBodyBound : SyntaxNode
         {
             int prev = offset;
             offset += 2;
-            VariableValue value = VariableValue.Parse(parser);
+            VariableValue value = VariableValue.Parse(parser, false);
             if (node is VarDeclarationNode varNode)
             {
                 // setting init value for simplicity (the only time that parser sets variable value directly)
@@ -60,30 +56,13 @@ public sealed class FunctionBodyBound : SyntaxNode
         }
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.OpenParentheseToken))
         {
-            // probably function call
-            FunctionDeclaration? localFunc = parser.compilationUnit.LocalStorage.GetLocalFunc(parser.syntaxTokens[offset].PlainValue);
-            if (localFunc == null)
-                Error.Execute(parser.logger, ErrorDefaults.UnknownReference, parser.syntaxTokens[offset].Line);
-
-            offset += 2; // skipping to passed argument or ')'
-            List<VariableValue> passedVals = new List<VariableValue>();
-            while (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))
-            {
-                VariableValue passedVal = VariableValue.Parse(parser);
-                passedVals.Add(passedVal);
-
-                if (!parser.SaveEquals(0, SyntaxKind.CommaToken) && parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))
-                    Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
-
-                offset += parser.SaveEquals(0, SyntaxKind.CloseParentheseToken) ? 0 : 1;
-            }
-            offset++; // skipping ')'
-            node = new FunctionCall(localFunc!, passedVals.ToArray());
+            node = FunctionCall.Parse(parser);
         }
         else if (parser.SaveEquals(0, node => SyntaxFacts.IsKeyword(node.Kind)))
         {
-            // keywords
-            node = ParseKeywords();
+            parser.compilationUnit.CurrLvl++; // ascending position
+            node = ParseKeywords(parser);
+            parser.compilationUnit.CurrLvl--; // descending position, all the vars created above wont be accesible and will be released
         }
 
         // all of the statements before have to skip current token to semicolon (expected)
@@ -93,9 +72,19 @@ public sealed class FunctionBodyBound : SyntaxNode
         offset++; // skipping ';'
         return node!;
     }
-    private static SyntaxNode ParseKeywords()
+    private static SyntaxNode ParseKeywords(Parser parser)
     {
-
-        return null!;
+        switch(parser.syntaxTokens[parser.offset].Kind) 
+        {
+            case SyntaxKind.ReturnStatementToken:
+                return ReturnStatement.Parse(parser);
+            case SyntaxKind.IfStatementToken:
+                return IfStatement.Parse(parser);
+            case SyntaxKind.ElseStatementToken:
+                return ElseStatement.Parse(parser);
+            default:
+                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+                return null!;
+        }
     }
 }

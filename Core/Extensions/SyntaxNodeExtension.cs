@@ -16,6 +16,7 @@ public static class SyntaxNodeExtension
         if (node == null) return string.Empty;
 
         System.Text.StringBuilder sb = new System.Text.StringBuilder("\n" + nesting + node.GetType().Name);
+
         foreach(SyntaxNode child in node.GetChildren()) sb.Append(Print(child, nesting + "\t"));
         if (node is not SyntaxTree.ProgramBound)
             sb.Append(Print(node.Next!, nesting));

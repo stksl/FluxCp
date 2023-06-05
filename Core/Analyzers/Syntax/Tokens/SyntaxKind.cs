@@ -23,6 +23,7 @@ public enum SyntaxKind : uint
     DotToken,
     //logical operators
     IsEqualToken,
+    IsNotEqualToken,
     IsLessToken,
     IsMoreToken,
     LogicalAndToken,
@@ -47,4 +48,6 @@ public enum SyntaxKind : uint
     ElseStatementToken,
     ForLoopToken,
     WhileLoopToken,
+    TrueToken,
+    FalseToken,
 }
