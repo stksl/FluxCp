@@ -18,6 +18,6 @@ public sealed class ReturnStatement : SyntaxNode
             Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
         }
         parser.offset++;
-        return new ReturnStatement(VariableValue.Parse(parser, true));
+        return new ReturnStatement(VariableValue.Parse(parser));
     }
 }

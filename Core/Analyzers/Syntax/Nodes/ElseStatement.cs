@@ -1,6 +1,6 @@
 using Fluxcp.Errors;
 namespace Fluxcp.Syntax;
-public sealed class ElseStatement : LogicalStatement 
+public sealed class ElseStatement : SyntaxNode 
 {
     public bool IsElseIf => NextIfStatement != null;
     //Nullable body bound. Is not null if 'NextIfStatement' is.

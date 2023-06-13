@@ -9,6 +9,15 @@ public abstract class SyntaxNode
     }
     // empty syntax node
     public static SyntaxNode Empty => new EmptySyntaxNode();
+    public abstract IEnumerable<SyntaxNode> GetChildren();
+    public static SyntaxNode Parse(Parser parser) 
+    {
+        return null!;
+    }
+    // next node
+    public SyntaxNode? Next { get; internal set; }
+    // previous node
+    public SyntaxNode? Prev { get; internal set; }
     private sealed class EmptySyntaxNode : SyntaxNode 
     {
         public override IEnumerable<SyntaxNode> GetChildren()
@@ -16,16 +25,4 @@ public abstract class SyntaxNode
             return Array.Empty<SyntaxNode>();
         }
     }
-    public abstract IEnumerable<SyntaxNode> GetChildren();
-    public static SyntaxNode Parse(Parser parser) 
-    {
-        return null!;
-    }
-
-
-    // next node
-    public SyntaxNode? Next { get; internal set; }
-    // previous node
-    public SyntaxNode? Prev { get; internal set; }
-    
 }

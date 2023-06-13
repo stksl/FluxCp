@@ -25,10 +25,6 @@ public sealed class FunctionHeader : SyntaxNode
         {
             Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
-        else if (!DataType.FromName(parser.syntaxTokens[offset].PlainValue).IsTypeDefined(parser.compilationUnit))
-        {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownType, parser.syntaxTokens[offset].Line);
-        }
 
         DataType returnType = DataType.FromName(parser.syntaxTokens[offset].PlainValue);
         string functionName = parser.syntaxTokens[++offset].PlainValue;
@@ -41,8 +37,6 @@ public sealed class FunctionHeader : SyntaxNode
             if (!parser.SaveEquals(0, SyntaxKind.TextToken) || !parser.SaveEquals(1, SyntaxKind.TextToken))
                 Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
-            else if (!DataType.FromName(parser.syntaxTokens[offset].PlainValue).IsTypeDefined(parser.compilationUnit))
-                Error.Execute(parser.logger, ErrorDefaults.UnknownType, parser.syntaxTokens[offset].Line);
             else if (args.ContainsKey(parser.syntaxTokens[offset + 1].PlainValue))
                 Error.Execute(parser.logger, ErrorDefaults.AlreadyDefined, parser.syntaxTokens[offset + 1].Line);
 

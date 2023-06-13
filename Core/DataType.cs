@@ -7,6 +7,7 @@ public sealed class DataType : IDataType
     public long TypeID => typeID;
     public DataType(long typeId)
     {
+        
         typeID = typeId;
     }
     public static explicit operator DataType(long typeId) 

@@ -9,7 +9,6 @@ public sealed class Lexer
     #region DI
     private readonly SourceText text;
     private readonly ILogger? logger;
-    private readonly CompilationUnit compilationUnit;
     #endregion
     private int position;
     private object _sync = new object();
@@ -23,26 +22,25 @@ public sealed class Lexer
         ("use", SyntaxKind.UseStatementToken),
         ("if", SyntaxKind.IfStatementToken),
         ("else", SyntaxKind.ElseStatementToken),
-        ("for", SyntaxKind.ForLoopToken),
-        ("while", SyntaxKind.WhileLoopToken),
+        ("for", SyntaxKind.ForStatementToken),
+        ("while", SyntaxKind.WhileStatementToken),
         ("return", SyntaxKind.ReturnStatementToken),
         ("struct", SyntaxKind.StructDefineToken),
         ("true", SyntaxKind.TrueToken),
         ("false", SyntaxKind.FalseToken)
     };
-    public unsafe Lexer(SourceText tr, ILogger? logger_, CompilationUnit compilationUnit_)
+    public unsafe Lexer(SourceText tr, ILogger? logger_)
     {
         text = tr;
         position = 0;
         current = new SyntaxToken(text, 0) { Kind = SyntaxKind.StartOfFileToken, Length = 0, Offset = 0 };
         logger = logger_;
-        compilationUnit = compilationUnit_;
     }
     private SyntaxToken ChangeCurr(SyntaxKind kind, int length, bool changeOffset = true) 
     {
         current = new SyntaxToken(text, currLine) {Kind = kind, Offset = position, Length = length};
         if (changeOffset) position += length;
-
+        // adding trivia into hashmap
         return Current;
     }
     private bool SaveEquals(int offset, char val) 
@@ -218,5 +216,13 @@ public sealed class Lexer
     public bool EndOfFile()
     {
         return current.Kind == SyntaxKind.EndOfFileToken;
+    }
+    public sealed class LeadingTrivia 
+    {
+        private readonly Dictionary<SyntaxToken, int> Trivia;
+        public LeadingTrivia(Dictionary<SyntaxToken, int> trivia)
+        {
+            Trivia = trivia;
+        }
     }
 }

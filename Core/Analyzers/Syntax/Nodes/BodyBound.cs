@@ -46,13 +46,14 @@ public sealed class BodyBound : SyntaxNode
         {
             int prev = offset;
             offset += 2;
-            VariableValue value = VariableValue.Parse(parser, false);
-            if (node is VarDeclarationNode varNode)
+            VariableValue value = VariableValue.Parse(parser);
+            value.ToVar = parser.syntaxTokens[prev].PlainValue;
+            if (node is VarDeclarationNode varDec) 
             {
-                // setting init value for simplicity (the only time that parser sets variable value directly)
-                varNode.Value = value;
+                varDec.Value = value;
             }
             else node = value;
+
         }
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.OpenParentheseToken))
         {
@@ -60,9 +61,7 @@ public sealed class BodyBound : SyntaxNode
         }
         else if (parser.SaveEquals(0, node => SyntaxFacts.IsKeyword(node.Kind)))
         {
-            parser.compilationUnit.CurrLvl++; // ascending position
             node = ParseKeywords(parser);
-            parser.compilationUnit.CurrLvl--; // descending position, all the vars created above wont be accesible and will be released
         }
 
         // all of the statements before have to skip current token to semicolon (expected)
@@ -82,6 +81,8 @@ public sealed class BodyBound : SyntaxNode
                 return IfStatement.Parse(parser);
             case SyntaxKind.ElseStatementToken:
                 return ElseStatement.Parse(parser);
+            case SyntaxKind.WhileStatementToken:
+                return WhileStatement.Parse(parser);
             default:
                 Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
                 return null!;

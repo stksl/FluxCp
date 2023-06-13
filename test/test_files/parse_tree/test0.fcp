@@ -6,5 +6,5 @@ ProgramBound
 			FunctionHeader
 				FunctionArgument
 				FunctionArgument
-			FunctionBodyBound
+			BodyBound
 				EmptySyntaxNode

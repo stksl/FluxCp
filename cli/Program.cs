@@ -17,43 +17,65 @@ namespace Fluxcp.Cli
         public static unsafe void Main()
         {
             ILogger logger = new Logger();
-            CompilationUnit compilationUnit = new CompilationUnit();
+
             string text = GetStringAsync().Result;
+
             SourceText tr = SourceText.FromString(text);
+
             List<SyntaxToken> syntaxTokens = new List<SyntaxToken>();
-            Lexer lexer = new Lexer(tr, logger, compilationUnit);
+            Dictionary<int, SyntaxToken> leadingTrivia = new Dictionary<int, SyntaxToken>();
+
+            Lexer lexer = new Lexer(tr, logger);
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
             while (!lexer.EndOfFile())
             {
-                var curr = lexer.Lex();
-                syntaxTokens.Add(curr);
+                SyntaxToken lexem = lexer.Lex();
+                if (SyntaxFacts.IsTrivia(lexem.Kind)) 
+                {
+                    leadingTrivia[lexem.Offset] = lexem;
+                }
+                else syntaxTokens.Add(lexem);
             }
-            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), logger, compilationUnit);
-            SyntaxTree tree = parser.Parse();
-            var node = GetNode(typeof(BinaryExpression), tree.Root.Next!);
-            logger.ShowDebug(tree.Root.Print());
+            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), leadingTrivia, logger);
+            SyntaxTree tree = parser.Parse();   
             sw.Stop();
+
+            Console.Out.WriteLine(tree.Root.Print());
+            
             logger.ShowDebug(sw.ElapsedMilliseconds + "ms");
         }
-        private static SyntaxNode GetNode(Type type, SyntaxNode node_)
+        private static SyntaxNode? GetNode(Type type, SyntaxNode node_, ref int offset)
         {
-            if (node_ is BinaryExpression)
+            if (node_.GetType() == type) 
             {
-                return node_;
+                if (offset == 0)
+                    return node_;
+                else offset--;
             }
-            SyntaxNode node = null!;
+            SyntaxNode? node = null;
             foreach (var child in node_.GetChildren())
             {
-                node = GetNode(type, child);
-                if (node is BinaryExpression) return node;
+                node = GetNode(type, child, ref offset);
+                if (node?.GetType() == type) 
+                {
+                    if (offset == 0)
+                        return node;
+                    else offset--;
+                }
             }
             if (node_.Next != null)
             {
-                node = GetNode(type, node_.Next);
-                if (node is BinaryExpression) return node;
+                node = GetNode(type, node_.Next, ref offset);
+                if (node?.GetType() == type) 
+                {
+                    if (offset == 0)
+                        return node;
+                    else offset--;
+                }
             }
-            return null!;
+            return null;
         }
     }
     public sealed class Logger : ILogger

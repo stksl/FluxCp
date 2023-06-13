@@ -46,8 +46,8 @@ public enum SyntaxKind : uint
     UseStatementToken,
     IfStatementToken,
     ElseStatementToken,
-    ForLoopToken,
-    WhileLoopToken,
+    ForStatementToken,
+    WhileStatementToken,
     TrueToken,
     FalseToken,
 }

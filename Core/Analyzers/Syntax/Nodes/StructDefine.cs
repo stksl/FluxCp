@@ -4,13 +4,13 @@ namespace Fluxcp.Syntax;
 public sealed class StructDefine : SyntaxNode
 {
     public readonly string Name;
-    public Dictionary<string, StructField> Fields {get; internal set;}
-    public Dictionary<string, FunctionDeclaration> Functions {get; internal set;}
-    public StructDefine(string name)
+    public readonly Dictionary<string, StructField> Fields;
+    public readonly Dictionary<string, FunctionDeclaration> Functions;
+    public StructDefine(string name, Dictionary<string, StructField> fields, Dictionary<string, FunctionDeclaration> functions)
     {
         Name = name;
-        Fields = new Dictionary<string, StructField>();
-        Functions = new Dictionary<string, FunctionDeclaration>();
+        Fields = fields;
+        Functions = functions;
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {
@@ -31,12 +31,8 @@ public sealed class StructDefine : SyntaxNode
         string name = parser.syntaxTokens[offset].PlainValue;
         DataType structType = DataType.FromName(name);
 
-        if (structType.IsTypeDefined(parser.compilationUnit))
-            Error.Execute(parser.logger, ErrorDefaults.AlreadyDefined, parser.syntaxTokens[offset].Line);
-
-        // for the recursive references
-        StructDefine currStruct = new StructDefine(name);
-        parser.compilationUnit.LocalStorage.AddLocalType(currStruct);
+        Dictionary<string, StructField> fields = new Dictionary<string, StructField>();
+        Dictionary<string, FunctionDeclaration> functions = new Dictionary<string, FunctionDeclaration>();
 
         offset += 2; // skiping after '{'
         while (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseBraceToken))
@@ -50,22 +46,18 @@ public sealed class StructDefine : SyntaxNode
 
             // only function/field declaration
             string typeName = parser.syntaxTokens[offset].PlainValue;
-            if (!DataType.FromName(typeName).IsTypeDefined(parser.compilationUnit))
-            {
-                Error.Execute(parser.logger, ErrorDefaults.UnknownType, parser.syntaxTokens[offset].Line);
-            }
 
             if (parser.SaveEquals(2, SyntaxKind.SemicolonToken))
             {
                 // that's a field
                 StructField field = StructField.Parse(parser);
-                currStruct.Fields[field.Name] = field;
+                fields[field.Name] = field;
             }
             else if (parser.SaveEquals(2, SyntaxKind.OpenParentheseToken))
             {
                 // that's a function
                 FunctionDeclaration function = FunctionDeclaration.Parse(parser);
-                currStruct.Functions[function.Header.Name] = function;
+                functions[function.Header.Name] = function;
             }
             else
             {
@@ -74,7 +66,7 @@ public sealed class StructDefine : SyntaxNode
         }
         offset++; // skipping '}'
 
-        return currStruct;
+        return new StructDefine(name, fields, functions);
     }
     public override int GetHashCode()
     {

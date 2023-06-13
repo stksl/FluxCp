@@ -5,7 +5,8 @@ public sealed class LiteralValue : VariableValue
     public readonly ImmutableArray<SyntaxToken> Literal;
     public readonly int Position;
     public readonly int Length;
-    public LiteralValue(ImmutableArray<SyntaxToken> literal, int pos, int length) : base(false)
+    
+    public LiteralValue(ImmutableArray<SyntaxToken> literal, int pos, int length)
     {
         Literal = literal;
         Position = pos;

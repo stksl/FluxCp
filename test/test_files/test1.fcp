@@ -1,0 +1,29 @@
+use "SomeLib";
+struct byte {}
+struct i32
+{
+    byte first;
+    byte second;
+    byte someFunction(byte arg1, byte arg2) 
+    {
+    }
+    byte third;
+
+}
+i32 Main() 
+{   
+    i32 a = \123 > 2 & Main()\;
+}
+byte NotMain(byte test, byte test2) 
+{
+    NotMain(1, 321);
+    Main();
+    i32 x = 123;
+    while \true == true\ 
+    {
+        if \true > 1 && x < "asdasd"\
+        {
+            i32 y = 12;
+        };
+    };
+}

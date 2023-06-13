@@ -10,19 +10,38 @@ struct i32
     byte third;
 
 }
+struct bool
+{
+    byte first;
+    byte second;
+    byte someFunction(byte arg1, byte arg2, i32 arg3) 
+    {
+        i32 a = \123 > 2 & 2\;
+        i32 b = \123 > 2 & 2\;
+        i32 c = \123 > 2 & 2\;
+    }
+    byte third;
+    bool third2;
+    i32 third12;
+    byte thirds;
+    byte thirdd;
+    byte thirdx;
+    byte thirdz;
+    byte thirdh;
+
+}
 i32 Main() 
 {   
-    i32 a = \123 > 2 & Main()\;
+    i32 a22 = \123 > 2 & Main()\;
 }
 byte NotMain(byte test, byte test2) 
 {
     NotMain(1, 321);
     Main();
-    i32 x = 123;
-    if \true > 1 
-    && 
-    false < "asdasd"\
+    bool x = 123;
+    if \true > 1 && x < "asdasd"\
     {
         i32 y = 12;
     };
+    if \y == 1\ {};
 }

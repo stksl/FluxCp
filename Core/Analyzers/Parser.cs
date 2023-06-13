@@ -7,18 +7,18 @@ public sealed class Parser
     #region DI
     internal readonly ImmutableArray<SyntaxToken> syntaxTokens;
     internal readonly ILogger? logger;
-    internal readonly CompilationUnit compilationUnit;
+    // leading trivia. The key is trivia position.
+    internal readonly Dictionary<int, SyntaxToken> trivia;
     #endregion
     internal int offset;
     private object _sync = new object();
-    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, ILogger? logger_, CompilationUnit compilationUnit_)
+    //incoming syntaxTokens MUST NOT CONTAIN TRIVIA.
+    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, Dictionary<int, SyntaxToken> trivia_, 
+        ILogger? logger_)
     {
-        // see todo.txt for more info on that. will be fixed
-        syntaxTokens = syntaxTokens_.Where(token => token.Kind != SyntaxKind.WhitespaceToken &&
-            token.Kind != SyntaxKind.CommentToken && token.Kind != SyntaxKind.EndOfLineToken).ToImmutableArray();
-
+        syntaxTokens = syntaxTokens_;
         logger = logger_;
-        compilationUnit = compilationUnit_;
+        trivia = trivia_;
     }
     internal bool SaveEquals(int offset, Func<SyntaxToken, bool> pred)
     {
@@ -60,18 +60,7 @@ public sealed class Parser
                 SaveEquals(1, SyntaxKind.TextToken) &&
                 SaveEquals(2, SyntaxKind.OpenParentheseToken))
             {
-                if (compilationUnit.LocalStorage.GetLocalFunc(syntaxTokens[offset + 1].PlainValue) != null)
-                    Error.Execute(logger, ErrorDefaults.AlreadyDefined, syntaxTokens[offset + 1].Line);
-                
-                compilationUnit.LocalStorage.AddLocalFunc(new FunctionDeclaration(
-                    new FunctionHeader(
-                        null!, syntaxTokens[offset + 1].PlainValue, null!
-                    ),
-                    null!
-                )); // for now, the thing is we have to allow recursion
-
                 FunctionDeclaration function = FunctionDeclaration.Parse(this);
-                compilationUnit.LocalStorage.AddLocalFunc(function);
                 last.Next = function;
                 last = last.Next;
             }

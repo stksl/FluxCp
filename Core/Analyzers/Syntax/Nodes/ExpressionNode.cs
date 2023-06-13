@@ -2,7 +2,7 @@ using Fluxcp.Errors;
 namespace Fluxcp.Syntax;
 public abstract class ExpressionNode : VariableValue
 {
-    public ExpressionNode() : base(false)
+    public ExpressionNode()
     {
 
     }
@@ -77,6 +77,6 @@ public abstract class ExpressionNode : VariableValue
             BinaryExpression expression = (BinaryExpression)Parse(parser, SyntaxKind.CloseParentheseToken);
             return expression;
         }
-        return VariableValue.Parse(parser, true);
+        return VariableValue.Parse(parser);
     }
 }

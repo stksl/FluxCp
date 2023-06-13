@@ -20,6 +20,7 @@ public sealed class FunctionDeclaration : SyntaxNode
         ref int offset = ref parser.offset;
 
         FunctionHeader header = FunctionHeader.Parse(parser);
+        
         BodyBound bodyBound = BodyBound.Parse(parser);
 
         return new FunctionDeclaration(header, bodyBound);

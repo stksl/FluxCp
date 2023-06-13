@@ -2,14 +2,8 @@ using Fluxcp;
 namespace Fluxcp.Syntax;
 public abstract class VariableValue : SyntaxNode
 {
-    // inlining made for not copying values where it's not needed (for example in expressions).
-    // Not to be confused with function inlining
-    public readonly bool Inline;
-    public VariableValue(bool inline)
-    {
-        Inline = inline;
-    }
-    public static VariableValue Parse(Parser parser, bool inline)
+    public string? ToVar {get; internal set;}
+    public static new VariableValue Parse(Parser parser)
     {
         // '\' is an expression literal
         if (parser.SaveEquals(0, SyntaxKind.BackSlashToken)) 
@@ -21,7 +15,6 @@ public abstract class VariableValue : SyntaxNode
             return FunctionCall.Parse(parser);
         }
         return (VariableValue)LiteralValue.Parse(parser) ?? 
-               (VariableValue)CopyValue.Parse(parser) ?? 
-                RefValue.Parse(parser);
+               (VariableValue)CopyValue.Parse(parser);
     }
 }
