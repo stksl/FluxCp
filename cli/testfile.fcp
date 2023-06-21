@@ -1,47 +1,13 @@
-use "SomeLib";
-struct byte {}
-struct i32
-{
-    byte first;
-    byte second;
-    byte someFunction(byte arg1, byte arg2) 
-    {
-    }
-    byte third;
+use "./testfile2.fcp";
 
-}
-struct bool
+struct i32 
 {
-    byte first;
-    byte second;
-    byte someFunction(byte arg1, byte arg2, i32 arg3) 
+    i32 malloc(i32 addr, i32 length) 
     {
-        i32 a = \123 > 2 & 2\;
-        i32 b = \123 > 2 & 2\;
-        i32 c = \123 > 2 & 2\;
+        importlib "path_to_lib"
+        mmap(123, malloc(123, 123));
+        i32 myint = \somevar.someField.someFunc() + 1 && myint.hello *123 +32321+ 1 || true\;
     }
-    byte third;
-    bool third2;
-    i32 third12;
-    byte thirds;
-    byte thirdd;
-    byte thirdx;
-    byte thirdz;
-    byte thirdh;
+}
 
-}
-i32 Main() 
-{   
-    i32 a22 = \123 > 2 & Main()\;
-}
-byte NotMain(byte test, byte test2) 
-{
-    NotMain(1, 321);
-    Main();
-    bool x = 123;
-    if \true > 1 && x < "asdasd"\
-    {
-        i32 y = 12;
-    };
-    if \y == 1\ {};
-}
+i32 Main() {}

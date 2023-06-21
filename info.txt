@@ -14,6 +14,8 @@ Some info about the directories:
 FluxCp is a strongly-typed, compilable and functional programming language. (doesn't support OOP)
 FluxCp supports multithreading, pointers, importing and exporting other FluxCp projects.
 
+
+
 To actually build a FluxCp project you must have .NET 6+ SDK installed on your computer.
 
 Project structure:
@@ -38,7 +40,10 @@ For the project to run, you must implement "main function" entry point. Main fun
     }
     ```
 
-## some comment ## - ignored by the compiler
+Supports comments:
+    ```
+    ## some comment, ignored by the compiler ##
+    ```
 
 primitive types:
 void
@@ -64,8 +69,14 @@ Supports creating structs.
             for(i32 i = position; i < length; arr++) 
             {
                 outputString.add(*arr);
-            }
+            };
             return outputString;
         }
     }
+    ```
+
+You can use 'use' statements to include your FluxCp projects. 
+Only first tokens are checked i.e. you must use them at the beggining of the file.
+    ```
+    use "full_path_to_proj";
     ```

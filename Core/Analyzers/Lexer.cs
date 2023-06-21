@@ -6,10 +6,9 @@ namespace Fluxcp;
 
 public sealed class Lexer
 {
-    #region DI
     private readonly SourceText text;
     private readonly ILogger? logger;
-    #endregion
+    
     private int position;
     private object _sync = new object();
     private int currLine = 1;
@@ -26,6 +25,7 @@ public sealed class Lexer
         ("while", SyntaxKind.WhileStatementToken),
         ("return", SyntaxKind.ReturnStatementToken),
         ("struct", SyntaxKind.StructDefineToken),
+        ("importlib", SyntaxKind.ImportLibStatement),
         ("true", SyntaxKind.TrueToken),
         ("false", SyntaxKind.FalseToken)
     };
@@ -40,7 +40,6 @@ public sealed class Lexer
     {
         current = new SyntaxToken(text, currLine) {Kind = kind, Offset = position, Length = length};
         if (changeOffset) position += length;
-        // adding trivia into hashmap
         return Current;
     }
     private bool SaveEquals(int offset, char val) 
@@ -150,6 +149,8 @@ public sealed class Lexer
                 return ChangeCurr(SyntaxKind.SingleQuoteToken, 1);
             case '"':
                 return ChangeCurr(SyntaxKind.DoubleQuotesToken, 1);
+            case '_':
+                return ChangeCurr(SyntaxKind.UnderscoreToken, 1);
         }
         // pipeline
         return LexLogicalOperators();
@@ -195,7 +196,7 @@ public sealed class Lexer
         if (SaveEquals(0, char.IsLetter)) 
         {
             int length = 0, offset = position;
-            while (SaveEquals(length++, char.IsLetterOrDigit)) 
+            while (SaveEquals(length++, (ch) => char.IsLetterOrDigit(ch) || ch == '_')) 
             {
                 sb.Append(text[offset++]);
             }

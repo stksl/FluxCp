@@ -34,7 +34,7 @@ public class ParserTest
                 }
                 else tokens.Add(lexem);
             }
-            Parser parser = new Parser(tokens.ToImmutableArray(), leadingTrivia, null);
+            Parser parser = new Parser(tokens, leadingTrivia, null);
             SyntaxTree tree = parser.Parse();
             //getting full AST as string
             string treeStr = tree.Root.Print();

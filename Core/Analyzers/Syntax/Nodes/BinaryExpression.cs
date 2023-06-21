@@ -8,15 +8,11 @@ public sealed class BinaryExpression : ExpressionNode
         OperatorKind = operatorKind;
         Priority = priority;
     }
-    public BinaryExpression()
-    {
-        Left = null!; Right = null!;
-    }
     // variable value can be an expression
-    public VariableValue Left;
-    public VariableValue Right;
-    public int Priority;
-    public SyntaxKind OperatorKind;
+    public readonly VariableValue Left;
+    public readonly VariableValue Right;
+    public readonly int Priority;
+    public readonly  SyntaxKind OperatorKind;
     public override IEnumerable<SyntaxNode> GetChildren()
     {
         return Array.Empty<SyntaxNode>();

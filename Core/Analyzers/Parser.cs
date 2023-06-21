@@ -4,16 +4,15 @@ using Fluxcp.Syntax;
 namespace Fluxcp;
 public sealed class Parser
 {
-    #region DI
-    internal readonly ImmutableArray<SyntaxToken> syntaxTokens;
+    internal readonly List<SyntaxToken> syntaxTokens;
     internal readonly ILogger? logger;
     // leading trivia. The key is trivia position.
     internal readonly Dictionary<int, SyntaxToken> trivia;
-    #endregion
+    
     internal int offset;
     private object _sync = new object();
     //incoming syntaxTokens MUST NOT CONTAIN TRIVIA.
-    public Parser(ImmutableArray<SyntaxToken> syntaxTokens_, Dictionary<int, SyntaxToken> trivia_, 
+    public Parser(List<SyntaxToken> syntaxTokens_, Dictionary<int, SyntaxToken> trivia_, 
         ILogger? logger_)
     {
         syntaxTokens = syntaxTokens_;
@@ -22,7 +21,7 @@ public sealed class Parser
     }
     internal bool SaveEquals(int offset, Func<SyntaxToken, bool> pred)
     {
-        return this.offset + offset < syntaxTokens.Length && pred(syntaxTokens[this.offset + offset]);
+        return this.offset + offset < syntaxTokens.Count && pred(syntaxTokens[this.offset + offset]);
     }
     // simplifier
     internal bool SaveEquals(int offset, SyntaxKind kind)
@@ -48,7 +47,7 @@ public sealed class Parser
             last = last.Next;
         }
 
-        while (offset < syntaxTokens.Length - 1)
+        while (offset < syntaxTokens.Count - 1)
         {
             // parsing only functons or structs
             if (SaveEquals(0, SyntaxKind.StructDefineToken))

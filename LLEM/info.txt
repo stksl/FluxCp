@@ -17,24 +17,27 @@ HEADER structure:
     Version (4 bytes)
     Machine (4 bytes)
     sections offset (8 bytes each: .text, .data, .rodata, .bss)
-
+    other 24 bytes reserved.
     Example (raw hex):
     00 00 01 01
     86 64 00 01
-    30 00 00 00 00 00 00 00
+    40 00 00 00 00 00 00 00
+    00 00 00 00 00 00 00 00
+    00 00 00 00 00 00 00 00
+    00 00 00 00 00 00 00 00
+
     00 00 00 00 00 00 00 00
     00 00 00 00 00 00 00 00
     00 00 00 00 00 00 00 00
     Explanation:
     Version:
         01 - beta (02 - prerelease, 03 - stable or release)
-        other 3 bytes are version identifiers (in out case 1.0)
+        other 3 bytes are version identifiers (in our case 1.0)
         01 - integer value
         other 2 bytes is decimal value
     Machine:
         x86-64 Linux (01, 00, 64, 86)
         x86-64 Windows (00, 00, 64, 86) !! NOT SUPPORTED !!
-    .text offset:
-        48 bytes (0x30)
-        i.e. the text section goes right after the header with no .data section
+    Sections offsets:
+        Other 32 bytes are for 4 sections each 8 bytes of offset.
 

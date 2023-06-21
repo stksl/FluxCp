@@ -40,6 +40,7 @@ public enum SyntaxKind : uint
     TextToken,
     SingleQuoteToken,
     DoubleQuotesToken,
+    UnderscoreToken,
     //keywords
     StructDefineToken = 0xff,
     ReturnStatementToken,
@@ -48,6 +49,7 @@ public enum SyntaxKind : uint
     ElseStatementToken,
     ForStatementToken,
     WhileStatementToken,
+    ImportLibStatement,
     TrueToken,
     FalseToken,
 }

@@ -3,3 +3,8 @@ Version - compiler version (beta, prerelease, stable) and a floating-point numbe
 EntryPoint - entry point for the compiler (you can use '../', './')
 LogInformation - recommended always 'true'. Prints infos, warnings and errors to the stdout.
 Output - final output type. 'exec' for executable and 'lib' for library
+
+StartLLEM - true for generating bytecode file and executing by the LLEM automatically.
+
+
+output.asm -> llem -> executable or lib

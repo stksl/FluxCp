@@ -1,0 +1,13 @@
+struct byte 
+{
+    byte asd() {}
+}
+byte DoStuff() 
+{
+    byte mybyte = 255;
+    mybyte = mybyte.asd();
+    if \"asdasd" < 100\ 
+    {
+        byte myByte = 100;
+    };
+}

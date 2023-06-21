@@ -4,6 +4,6 @@
 
 **LLEM** (Low Level Executable Machine) is an open-source project that JIT compiles **FluxCp** bytecode and executes it.
 
-Works only on Linux x86-64
+**LLEM** works only on Linux x86-64
 
 For more information go to *info.txt*

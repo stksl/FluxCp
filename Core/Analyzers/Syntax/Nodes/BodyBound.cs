@@ -33,7 +33,7 @@ public sealed class BodyBound : SyntaxNode
         offset++; // skipping '}'
         return body;
     }
-    private static SyntaxNode ParseNext(Parser parser)
+    internal static SyntaxNode ParseNext(Parser parser)
     {
         ref int offset = ref parser.offset;
 
@@ -54,6 +54,12 @@ public sealed class BodyBound : SyntaxNode
             }
             else node = value;
 
+        }
+        else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.DotToken)) 
+        {
+            //invoking members as setter
+            offset += 2;
+            node = MemberInvoke.Parse(parser);
         }
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.OpenParentheseToken))
         {
@@ -83,6 +89,8 @@ public sealed class BodyBound : SyntaxNode
                 return ElseStatement.Parse(parser);
             case SyntaxKind.WhileStatementToken:
                 return WhileStatement.Parse(parser);
+            case SyntaxKind.ImportLibStatement:
+                return ImportLib.Parse(parser);
             default:
                 Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
                 return null!;

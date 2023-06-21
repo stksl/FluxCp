@@ -3,7 +3,7 @@ public static class SyntaxFacts
 {
     public static bool IsKeyword(SyntaxKind kind) 
     {
-        return (uint)kind - byte.MaxValue <= 8;
+        return (uint)kind - byte.MaxValue <= 9;
     }
     public static bool IsTrivia(SyntaxKind kind) 
     {

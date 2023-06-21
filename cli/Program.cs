@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Fluxcp.Syntax;
+using Fluxcp.Errors;
+using System.Reflection.Emit;
 namespace Fluxcp.Cli
 {
     public class Program
@@ -17,6 +19,7 @@ namespace Fluxcp.Cli
         public static unsafe void Main()
         {
             ILogger logger = new Logger();
+            CompilationUnit unit = new CompilationUnit(new CompilingOptions(true, "./testfile.fcp"), null);
 
             string text = GetStringAsync().Result;
 
@@ -26,7 +29,6 @@ namespace Fluxcp.Cli
             Dictionary<int, SyntaxToken> leadingTrivia = new Dictionary<int, SyntaxToken>();
 
             Lexer lexer = new Lexer(tr, logger);
-
             Stopwatch sw = new Stopwatch();
             sw.Start();
             while (!lexer.EndOfFile())
@@ -38,12 +40,12 @@ namespace Fluxcp.Cli
                 }
                 else syntaxTokens.Add(lexem);
             }
-            Parser parser = new Parser(syntaxTokens.ToImmutableArray(), leadingTrivia, logger);
-            SyntaxTree tree = parser.Parse();   
+            Parser parser = new Parser(syntaxTokens, leadingTrivia, logger);
+            SyntaxTree tree = parser.Parse();  
+            Builder builder = new Builder(tree, unit, logger); 
+            builder.Build();
             sw.Stop();
-
-            Console.Out.WriteLine(tree.Root.Print());
-            
+            System.Console.WriteLine(tree.Root.Print());
             logger.ShowDebug(sw.ElapsedMilliseconds + "ms");
         }
         private static SyntaxNode? GetNode(Type type, SyntaxNode node_, ref int offset)
@@ -65,6 +67,7 @@ namespace Fluxcp.Cli
                     else offset--;
                 }
             }
+            
             if (node_.Next != null)
             {
                 node = GetNode(type, node_.Next, ref offset);

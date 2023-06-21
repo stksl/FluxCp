@@ -3,10 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace Fluxcp;
 public sealed class CompilationUnit 
 {
-    public int CurrLvl; // our current level on parsing phase. (variable access range)
-    public readonly LocalStorage LocalStorage;
-    public CompilationUnit()
+    internal int CurrLvl; // our current level on parsing phase. (variable access range)
+    internal readonly LocalStorage LocalStorage;
+    public readonly CompilingOptions Options;
+    public CompilationUnit(CompilingOptions options, LocalStorage? existingStorage)
     {
-        LocalStorage = new LocalStorage();
+        LocalStorage = existingStorage ?? new LocalStorage();
+        Options = options;
     }
 }

@@ -30,5 +30,6 @@ public enum ErrorDefaults : int
     UnknownDeclaration = -0x1c,
     UnknownReference = -0x4a,
     AlreadyDefined = -0xad,
-    OutOfScope = -0xbb
+    OutOfScope = -0xbb,
+    NoEntryFound = -0xf5
 }
