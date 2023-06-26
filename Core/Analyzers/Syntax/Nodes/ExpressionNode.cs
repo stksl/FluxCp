@@ -31,7 +31,7 @@ public abstract class ExpressionNode : VariableValue
             }
             else
             {
-                Error.Execute(parser.logger, ErrorDefaults.UnknownReference, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownReference, parser.syntaxTokens[offset].Line);
             }
         }
         offset++;
@@ -61,7 +61,7 @@ public abstract class ExpressionNode : VariableValue
             }
             else
             {
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
             }
         }
     _return:

@@ -16,7 +16,7 @@ public sealed class IfStatement : LogicalStatement
         ref int offset = ref parser.offset;
         if (!parser.SaveEquals(0, SyntaxKind.IfStatementToken)) 
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
         offset++;
         ExpressionNode expression = ExpressionNode.Parse(parser);

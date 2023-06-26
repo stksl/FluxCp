@@ -18,9 +18,11 @@ public enum SyntaxKind : uint
     CloseBraceToken,
     OpenBracketToken,
     CloseBracketToken,
+    ColonToken,
     SemicolonToken,
     CommaToken,
     DotToken,
+    CastToken,
     //logical operators
     IsEqualToken,
     IsNotEqualToken,

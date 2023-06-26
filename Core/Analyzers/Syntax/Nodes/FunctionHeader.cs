@@ -23,7 +23,7 @@ public sealed class FunctionHeader : SyntaxNode
             !parser.SaveEquals(1, SyntaxKind.TextToken) ||
             !parser.SaveEquals(2, SyntaxKind.OpenParentheseToken))
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
 
         DataType returnType = DataType.FromName(parser.syntaxTokens[offset].PlainValue);
@@ -35,17 +35,17 @@ public sealed class FunctionHeader : SyntaxNode
         while (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))
         {
             if (!parser.SaveEquals(0, SyntaxKind.TextToken) || !parser.SaveEquals(1, SyntaxKind.TextToken))
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
             else if (args.ContainsKey(parser.syntaxTokens[offset + 1].PlainValue))
-                Error.Execute(parser.logger, ErrorDefaults.AlreadyDefined, parser.syntaxTokens[offset + 1].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.AlreadyDefined, parser.syntaxTokens[offset + 1].Line);
 
             FunctionArgument arg = FunctionArgument.Parse(parser);
             args[arg.Name] = arg;
 
             if (parser.SaveEquals(0, node => node.Kind != SyntaxKind.CommaToken) &&
                 !parser.SaveEquals(0, SyntaxKind.CloseParentheseToken))
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
             offset += parser.SaveEquals(0, SyntaxKind.CloseParentheseToken) ? 0 : 1; // going to the next argument, skipping ','
         }

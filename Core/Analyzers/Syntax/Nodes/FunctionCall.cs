@@ -19,7 +19,7 @@ public sealed class FunctionCall : VariableValue
         ref int offset = ref parser.offset;
         if (!parser.SaveEquals(0, SyntaxKind.TextToken)) 
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownReference, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownReference, parser.syntaxTokens[offset].Line);
         }
         string funcName = parser.syntaxTokens[offset].PlainValue;
         offset += 2; // skipping to passed argument or ')'
@@ -30,7 +30,7 @@ public sealed class FunctionCall : VariableValue
             passedVals.Add(passedVal);
 
             if (!parser.SaveEquals(0, SyntaxKind.CommaToken) && parser.SaveEquals(0, node => node.Kind != SyntaxKind.CloseParentheseToken))
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
             offset += parser.SaveEquals(0, SyntaxKind.CloseParentheseToken) ? 0 : 1;
         }

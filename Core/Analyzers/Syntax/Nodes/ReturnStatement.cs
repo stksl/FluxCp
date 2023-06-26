@@ -15,7 +15,7 @@ public sealed class ReturnStatement : SyntaxNode
     {
         if (!parser.SaveEquals(0, SyntaxKind.ReturnStatementToken)) 
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
         }
         parser.offset++;
         return new ReturnStatement(VariableValue.Parse(parser));

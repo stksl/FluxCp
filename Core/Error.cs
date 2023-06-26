@@ -31,5 +31,7 @@ public enum ErrorDefaults : int
     UnknownReference = -0x4a,
     AlreadyDefined = -0xad,
     OutOfScope = -0xbb,
-    NoEntryFound = -0xf5
+    NoEntryFound = -0x0ef,
+    UnableToCast = -0xce
+
 }

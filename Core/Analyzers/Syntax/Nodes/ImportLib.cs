@@ -18,7 +18,7 @@ public sealed class ImportLib : SyntaxNode
     public static new ImportLib Parse(Parser parser) 
     {
         if (!parser.SaveEquals(0, SyntaxKind.ImportLibStatement))
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
         parser.offset++;
         VariableValue pathVar = VariableValue.Parse(parser);
         // next token expected to be function call directly

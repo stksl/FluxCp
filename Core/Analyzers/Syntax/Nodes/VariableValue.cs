@@ -3,8 +3,11 @@ namespace Fluxcp.Syntax;
 public abstract class VariableValue : SyntaxNode
 {
     public string? ToVar {get; internal set;}
+    public DataType? CastTo {get; internal set;}
+    public bool IsCasted => CastTo != null;
     public static new VariableValue Parse(Parser parser)
     {
+        VariableValue resultValue = null!;
         // '\' is an expression literal
         if (parser.SaveEquals(0, SyntaxKind.BackSlashToken)) 
         {
@@ -12,9 +15,18 @@ public abstract class VariableValue : SyntaxNode
         }
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.OpenParentheseToken)) 
         {
-            return FunctionCall.Parse(parser);
+            resultValue = FunctionCall.Parse(parser);
         }
-        return (VariableValue)LiteralValue.Parse(parser) ?? 
-               (VariableValue)CopyValue.Parse(parser);
+        else  
+        {
+            resultValue = LiteralValue.Parse(parser)! ?? 
+                (VariableValue)CopyValue.Parse(parser);
+        }
+        
+        if (parser.SaveEquals(0, SyntaxKind.CastToken)) 
+        {
+            resultValue.CastTo = DataType.FromName(parser.syntaxTokens[parser.offset + 1].PlainValue);
+        }
+        return resultValue;
     }
 }

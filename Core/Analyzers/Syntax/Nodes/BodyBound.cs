@@ -18,7 +18,7 @@ public sealed class BodyBound : SyntaxNode
         ref int offset = ref parser.offset;
         if (!parser.SaveEquals(0, SyntaxKind.OpenBraceToken))
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
         offset++; // skipping '{'
         BodyBound body = new BodyBound(offset);
@@ -72,7 +72,7 @@ public sealed class BodyBound : SyntaxNode
 
         // all of the statements before have to skip current token to semicolon (expected)
         if (!parser.SaveEquals(0, SyntaxKind.SemicolonToken))
-            Error.Execute(parser.logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
 
         offset++; // skipping ';'
         return node!;
@@ -92,7 +92,7 @@ public sealed class BodyBound : SyntaxNode
             case SyntaxKind.ImportLibStatement:
                 return ImportLib.Parse(parser);
             default:
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
                 return null!;
         }
     }

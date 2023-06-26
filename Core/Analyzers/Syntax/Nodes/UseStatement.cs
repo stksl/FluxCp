@@ -20,7 +20,7 @@ public sealed class UseStatement : SyntaxNode
 
         if (!parser.SaveEquals(1, SyntaxKind.TextToken) && !parser.SaveEquals(1, SyntaxKind.DoubleQuotesToken))
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
         }
         string reference;
@@ -42,7 +42,7 @@ public sealed class UseStatement : SyntaxNode
         }
 
         if (!parser.SaveEquals(-1, SyntaxKind.SemicolonToken))
-            Error.Execute(parser.logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
 
         return new UseStatement(reference);
     }

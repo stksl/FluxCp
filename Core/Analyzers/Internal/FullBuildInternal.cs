@@ -17,9 +17,9 @@ internal sealed class FullBuildInternal
     }
     public CompilationUnit FullBuild(SourceText sourceText) 
     {
-        CompilationUnit unit = new CompilationUnit(options, null);
+        CompilationUnit unit = new CompilationUnit(options, null, logger);
 
-        Lexer lexer = new Lexer(sourceText, null);
+        Lexer lexer = new Lexer(sourceText, unit);
         List<SyntaxToken> tokens = new List<SyntaxToken>();
         Dictionary<int, SyntaxToken> trivia = new Dictionary<int, SyntaxToken>();
         while (!lexer.EndOfFile()) 
@@ -31,9 +31,9 @@ internal sealed class FullBuildInternal
             }
             else tokens.Add(token);
         }
-        Parser parser = new Parser(tokens, trivia, logger);
+        Parser parser = new Parser(tokens, trivia, unit);
         SyntaxTree tree = parser.Parse();
-        Builder builder = new Builder(tree, unit, logger);
+        Builder builder = new Builder(tree, unit);
         builder.Build();
         return unit;
     }

@@ -11,7 +11,7 @@ public sealed class ElseStatement : SyntaxNode
     {
         ref int offset = ref parser.offset;
         if (!parser.SaveEquals(0, SyntaxKind.ElseStatementToken)) 
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
 
         offset++;
         return parser.SaveEquals(0, SyntaxKind.IfStatementToken) ? 

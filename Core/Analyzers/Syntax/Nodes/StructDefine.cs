@@ -1,11 +1,13 @@
 using Fluxcp.Errors;
-
+using Fluxcp.LowLevel;
 namespace Fluxcp.Syntax;
 public sealed class StructDefine : SyntaxNode
 {
     public readonly string Name;
+    public PrimitiveType? BaseType {get; internal set;} // null is for custom type
     public readonly Dictionary<string, StructField> Fields;
     public readonly Dictionary<string, FunctionDeclaration> Functions;
+    public uint Size {get; internal set;} // this size is for custom types only
     public StructDefine(string name, Dictionary<string, StructField> fields, Dictionary<string, FunctionDeclaration> functions)
     {
         Name = name;
@@ -24,7 +26,7 @@ public sealed class StructDefine : SyntaxNode
         if (parser.SaveEquals(1, node => node.Kind != SyntaxKind.TextToken) ||
             parser.SaveEquals(2, node => node.Kind != SyntaxKind.OpenBraceToken))
         {
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         }
         offset++; // skiping to structure's name
 
@@ -41,7 +43,7 @@ public sealed class StructDefine : SyntaxNode
             if (parser.SaveEquals(0, node => node.Kind != SyntaxKind.TextToken) ||
                 parser.SaveEquals(1, node => node.Kind != SyntaxKind.TextToken))
             {
-                Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
             }
 
             // only function/field declaration
@@ -61,7 +63,7 @@ public sealed class StructDefine : SyntaxNode
             }
             else
             {
-                Error.Execute(parser.logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
+                Error.Execute(parser.cUnit.Logger, ErrorDefaults.SemicolonExpected, parser.syntaxTokens[offset].Line);
             }
         }
         offset++; // skipping '}'

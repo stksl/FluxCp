@@ -27,7 +27,7 @@ public abstract class MemberInvoke : CopyValue
         // someVar.someField.someFieldField.someFunction().otherField;
 
         if (!parser.SaveEquals(0, SyntaxKind.TextToken))
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
         MemberInvoke curr = null!;
         if (parser.SaveEquals(1, SyntaxKind.OpenParentheseToken)) 
         {

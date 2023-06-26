@@ -7,7 +7,7 @@ namespace Fluxcp;
 public sealed class Lexer
 {
     private readonly SourceText text;
-    private readonly ILogger? logger;
+    private readonly CompilationUnit cUnit;
     
     private int position;
     private object _sync = new object();
@@ -29,12 +29,12 @@ public sealed class Lexer
         ("true", SyntaxKind.TrueToken),
         ("false", SyntaxKind.FalseToken)
     };
-    public unsafe Lexer(SourceText tr, ILogger? logger_)
+    public unsafe Lexer(SourceText tr, CompilationUnit unit)
     {
         text = tr;
         position = 0;
         current = new SyntaxToken(text, 0) { Kind = SyntaxKind.StartOfFileToken, Length = 0, Offset = 0 };
-        logger = logger_;
+        cUnit = unit;
     }
     private SyntaxToken ChangeCurr(SyntaxKind kind, int length, bool changeOffset = true) 
     {
@@ -63,7 +63,7 @@ public sealed class Lexer
         if (position >= text.Length) 
         {
             if (current.Kind != SyntaxKind.EndOfFileToken) ChangeCurr(SyntaxKind.EndOfFileToken, 0);
-            else logger?.ShowDebug("Lexing a finished text");
+            else cUnit.Logger?.ShowDebug("Lexing a finished text");
             return Current;
         }
         switch (text[position])
@@ -151,6 +151,10 @@ public sealed class Lexer
                 return ChangeCurr(SyntaxKind.DoubleQuotesToken, 1);
             case '_':
                 return ChangeCurr(SyntaxKind.UnderscoreToken, 1);
+            case ':':
+                if (SaveEquals(1, ':'))
+                    return ChangeCurr(SyntaxKind.CastToken, 2);
+                return ChangeCurr(SyntaxKind.ColonToken, 1);
         }
         // pipeline
         return LexLogicalOperators();

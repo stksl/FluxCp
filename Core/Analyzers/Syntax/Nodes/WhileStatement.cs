@@ -12,7 +12,7 @@ public sealed class WhileStatement : LogicalStatement
     public static new WhileStatement Parse(Parser parser) 
     {
         if (!parser.SaveEquals(0, SyntaxKind.WhileStatementToken)) 
-            Error.Execute(parser.logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
+            Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
         parser.offset++;
         ExpressionNode exp = ExpressionNode.Parse(parser);
         BodyBound body = BodyBound.Parse(parser);

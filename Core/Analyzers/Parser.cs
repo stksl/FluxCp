@@ -5,7 +5,7 @@ namespace Fluxcp;
 public sealed class Parser
 {
     internal readonly List<SyntaxToken> syntaxTokens;
-    internal readonly ILogger? logger;
+    internal readonly CompilationUnit cUnit;
     // leading trivia. The key is trivia position.
     internal readonly Dictionary<int, SyntaxToken> trivia;
     
@@ -13,10 +13,10 @@ public sealed class Parser
     private object _sync = new object();
     //incoming syntaxTokens MUST NOT CONTAIN TRIVIA.
     public Parser(List<SyntaxToken> syntaxTokens_, Dictionary<int, SyntaxToken> trivia_, 
-        ILogger? logger_)
+        CompilationUnit unit)
     {
         syntaxTokens = syntaxTokens_;
-        logger = logger_;
+        cUnit = unit;
         trivia = trivia_;
     }
     internal bool SaveEquals(int offset, Func<SyntaxToken, bool> pred)
@@ -65,7 +65,7 @@ public sealed class Parser
             }
             else
             {
-                Error.Execute(logger, ErrorDefaults.UnknownDeclaration, syntaxTokens[offset].Line);
+                Error.Execute(cUnit.Logger, ErrorDefaults.UnknownDeclaration, syntaxTokens[offset].Line);
             }
         }
         return tree;
