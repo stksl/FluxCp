@@ -1,3 +1,4 @@
+using System.Reflection;
 namespace Fluxcp.LowLevel;
 public struct PrimitiveType 
 {
@@ -67,6 +68,16 @@ public struct PrimitiveType
             default:
                 return Byte;
         }
+    }
+    public static PrimitiveType? FromName(string name) 
+    {
+        foreach(FieldInfo primitiveTypeFld in typeof(PrimitiveType).GetFields().Where(field => field.IsPublic && field.IsStatic && field.IsInitOnly)) 
+        {
+            PrimitiveType primitiveType = (PrimitiveType)primitiveTypeFld.GetValue(null!)!;
+            if (name == primitiveType.asStr)
+                return primitiveType;
+        }
+        return null;
     }
     public override string ToString()
     {

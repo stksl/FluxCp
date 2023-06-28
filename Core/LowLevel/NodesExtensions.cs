@@ -34,12 +34,11 @@ public static class NodesExtensions
             if (value.IsCasted) 
             {
                 StructDefine? castType = null; 
-                if (!value.CastTo!.IsTypeDefined(cUnit, out castType))
+                if (!value.CastTo!.IsTypeDefined(cUnit, out castType) || !castType!.BaseType.HasValue)
                     Error.Execute(cUnit.Logger, ErrorDefaults.UnknownType, 0); // 0 as LINE FOR NOW
                 byte[] castedBytes = 
                     CastingHelper.Cast(literalType, outputBytes, castType!.BaseType!.Value, cUnit);
-                if (castedBytes == null)
-                    Error.Execute(cUnit.Logger, ErrorDefaults.UnableToCast, 0); // 0 as line FOR NOW
+
                 
                 outputBytes = castedBytes!;
             }
@@ -47,7 +46,8 @@ public static class NodesExtensions
         }
         else if (value is CopyValue copyValue) 
         {
-
+            VarDeclarationNode? fromVar = cUnit.LocalStorage.GetLocalVar(copyValue.FromVar);
+            return GetBytes(fromVar!.Value!, cUnit);
         }
         return outputBytes;
     }

@@ -4,15 +4,17 @@ namespace Fluxcp.Syntax;
 public sealed class StructDefine : SyntaxNode
 {
     public readonly string Name;
-    public PrimitiveType? BaseType {get; internal set;} // null is for custom type
+    public readonly PrimitiveType? BaseType; // null is for custom type
     public readonly Dictionary<string, StructField> Fields;
     public readonly Dictionary<string, FunctionDeclaration> Functions;
     public uint Size {get; internal set;} // this size is for custom types only
-    public StructDefine(string name, Dictionary<string, StructField> fields, Dictionary<string, FunctionDeclaration> functions)
+    public StructDefine(string name, Dictionary<string, StructField> fields, 
+        Dictionary<string, FunctionDeclaration> functions, PrimitiveType? primitiveType)
     {
         Name = name;
         Fields = fields;
         Functions = functions;
+        BaseType = primitiveType;
     }
     public override IEnumerable<SyntaxNode> GetChildren()
     {
@@ -31,6 +33,10 @@ public sealed class StructDefine : SyntaxNode
         offset++; // skiping to structure's name
 
         string name = parser.syntaxTokens[offset].PlainValue;
+
+        // checking for primitive type
+        PrimitiveType? primitiveType = PrimitiveType.FromName(name);
+
         DataType structType = DataType.FromName(name);
 
         Dictionary<string, StructField> fields = new Dictionary<string, StructField>();
@@ -68,7 +74,7 @@ public sealed class StructDefine : SyntaxNode
         }
         offset++; // skipping '}'
 
-        return new StructDefine(name, fields, functions);
+        return new StructDefine(name, fields, functions, primitiveType);
     }
     public override int GetHashCode()
     {

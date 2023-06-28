@@ -51,7 +51,8 @@ public enum SyntaxKind : uint
     ElseStatementToken,
     ForStatementToken,
     WhileStatementToken,
-    ImportLibStatement,
+    ImportLibToken,
+    SkipToken,
     TrueToken,
     FalseToken,
 }

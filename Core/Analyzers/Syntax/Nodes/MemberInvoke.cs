@@ -7,7 +7,10 @@ public abstract class MemberInvoke : CopyValue
     public MemberInvoke? NextInvoke {get; internal set;}
     public VariableValue? Value {get; internal set;}
     public bool SetterCalled => Value != null;
-    public override string FromVar => GetFullName();
+    public MemberInvoke(string parentName) : base(string.Empty)
+    {
+        FromVar = parentName + GetFullName();
+    }
     public string GetName() 
     {
         string currName = "";
@@ -26,16 +29,21 @@ public abstract class MemberInvoke : CopyValue
         // either a field or function invoke, but can be recursive
         // someVar.someField.someFieldField.someFunction().otherField;
 
-        if (!parser.SaveEquals(0, SyntaxKind.TextToken))
+        if (!parser.SaveEquals(0, SyntaxKind.TextToken) || 
+            !parser.SaveEquals(1, SyntaxKind.DotToken) || 
+            !parser.SaveEquals(2, SyntaxKind.TextToken))
             Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[offset].Line);
+
+        string parentName = parser.syntaxTokens[offset].PlainValue;
+        offset += 2;
         MemberInvoke curr = null!;
         if (parser.SaveEquals(1, SyntaxKind.OpenParentheseToken)) 
         {
-            curr = new FunctionInvoke(FunctionCall.Parse(parser));
+            curr = new FunctionInvoke(FunctionCall.Parse(parser), parentName);
         }
         else 
         {
-            curr = new FieldInvoke(parser.syntaxTokens[offset].PlainValue);
+            curr = new FieldInvoke(parser.syntaxTokens[offset].PlainValue, parentName);
             offset++;
         }
 
@@ -62,7 +70,7 @@ public abstract class MemberInvoke : CopyValue
 public sealed class FieldInvoke : MemberInvoke 
 {
     public readonly string FieldName;
-    public FieldInvoke(string fieldName)
+    public FieldInvoke(string fieldName, string parentName) : base(parentName)
     {
         FieldName = fieldName;
     }
@@ -74,7 +82,7 @@ public sealed class FieldInvoke : MemberInvoke
 public sealed class FunctionInvoke : MemberInvoke 
 {
     public readonly FunctionCall Call;
-    public FunctionInvoke(FunctionCall call)
+    public FunctionInvoke(FunctionCall call, string parentName) : base(parentName)
     {
         Call = call;
     }

@@ -1,13 +1,14 @@
 use "./testfile2.fcp";
-
-struct i32 
+i32 Main() 
 {
-    i32 malloc(i32 addr, i32 length) 
-    {
-        importlib "path_to_lib"
-        mmap(123, malloc(123, 123));
-        i32 myint = \somevar.someField.someFunc() + 1 && myint.hello *123 +32321+ 1 || true\;
-    }
+    i64 mylong = 4463427534;
+    i64 long2 = mylong;
+    long2 = main2();
+    long2 = main2();
+    long2 = 1;
 }
-
-i32 Main() {}
+i32 main2() 
+{
+    byte asd = 123;
+    i64 asd23 = 344583;
+}

@@ -1,13 +1,21 @@
-struct byte 
+struct i32 
 {
-    byte asd() {}
-}
-byte DoStuff() 
-{
-    byte mybyte = 255;
-    mybyte = mybyte.asd();
-    if \"asdasd" < 100\ 
+    i32 malloc(i32 addr, i32 length) 
     {
-        byte myByte = 100;
-    };
+        importlib "path_to_lib"
+        mmap(123, malloc(123, 123));
+        ## i32 myint = \somevar.someField.someFunc() + 1 && myint.hello *123 +32321+ 1 || true\; ##
+    }
+}
+## i64 - long (8 bytes), hardcoded ##
+struct i64 
+{
+
+}
+struct byte {}
+struct myStr 
+{
+    i64 field1;
+    i64 field2;
+    byte byte1;
 }

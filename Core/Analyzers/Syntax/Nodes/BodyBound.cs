@@ -58,7 +58,6 @@ public sealed class BodyBound : SyntaxNode
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.DotToken)) 
         {
             //invoking members as setter
-            offset += 2;
             node = MemberInvoke.Parse(parser);
         }
         else if (parser.SaveEquals(0, SyntaxKind.TextToken) && parser.SaveEquals(1, SyntaxKind.OpenParentheseToken))
@@ -89,8 +88,10 @@ public sealed class BodyBound : SyntaxNode
                 return ElseStatement.Parse(parser);
             case SyntaxKind.WhileStatementToken:
                 return WhileStatement.Parse(parser);
-            case SyntaxKind.ImportLibStatement:
+            case SyntaxKind.ImportLibToken:
                 return ImportLib.Parse(parser);
+            case SyntaxKind.SkipToken:
+                return SkipNode.Parse(parser);
             default:
                 Error.Execute(parser.cUnit.Logger, ErrorDefaults.UnknownDeclaration, parser.syntaxTokens[parser.offset].Line);
                 return null!;

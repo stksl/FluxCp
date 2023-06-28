@@ -13,12 +13,11 @@ public static class CastingHelper
                 {
                     //to number
                     case PrimitiveTypes.Number:
-                        if (toType.Size > fromType.Size) 
+                        if (toType.Size >= fromType.Size) 
                         {
                             // if we're parsing a number to a larger number type (for example i32 to i64)
-                            int diff = toType.Size - fromType.Size;
                             return Enumerable.Range(0, toType.Size).Select((i, ind) => 
-                                ind < diff ? (byte)0 : value[ind - diff]).ToArray();
+                                ind >= fromType.Size ? (byte)0 : value[ind]).ToArray();
                         }
                         // parsing a number to a number with less size (for example u16 to byte)
                         return Enumerable.Range(0, toType.Size).Select((i, ind) => 

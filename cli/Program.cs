@@ -46,6 +46,7 @@ namespace Fluxcp.Cli
             builder.Build();
             sw.Stop();
             System.Console.WriteLine(tree.Root.Print());
+            System.Console.WriteLine(sw.ElapsedMilliseconds + "ms");
         }
         private static SyntaxNode? GetNode(Type type, SyntaxNode node_, ref int offset)
         {

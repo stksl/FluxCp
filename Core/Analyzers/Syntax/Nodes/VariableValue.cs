@@ -26,6 +26,7 @@ public abstract class VariableValue : SyntaxNode
         if (parser.SaveEquals(0, SyntaxKind.CastToken)) 
         {
             resultValue.CastTo = DataType.FromName(parser.syntaxTokens[parser.offset + 1].PlainValue);
+            parser.offset += 2;
         }
         return resultValue;
     }

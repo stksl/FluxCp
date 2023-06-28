@@ -25,7 +25,8 @@ public sealed class Lexer
         ("while", SyntaxKind.WhileStatementToken),
         ("return", SyntaxKind.ReturnStatementToken),
         ("struct", SyntaxKind.StructDefineToken),
-        ("importlib", SyntaxKind.ImportLibStatement),
+        ("importlib", SyntaxKind.ImportLibToken),
+        ("skip", SyntaxKind.SkipToken),
         ("true", SyntaxKind.TrueToken),
         ("false", SyntaxKind.FalseToken)
     };
